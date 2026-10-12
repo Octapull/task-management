@@ -1,0 +1,16 @@
+# Derleme çıktıları imaja girmemeli: konteyner içinde yeniden derleniyor ve
+# host'tan gelen Windows çıktısı Linux imajını bozar.
+bin/
+obj/
+
+# Sırlar ve yerel ayarlar. Gerçek değerler ortam değişkeniyle veriliyor.
+appsettings.*.local.json
+*.user
+.env
+
+# Konteynerde işe yaramayanlar.
+Properties/launchSettings.json
+*.http
+App_Data/
+Dockerfile
+.dockerignore

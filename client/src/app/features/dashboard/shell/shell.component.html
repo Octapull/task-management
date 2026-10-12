@@ -1,0 +1,156 @@
+<header class="topbar">
+  <a class="topbar__brand" routerLink="/board" [attr.aria-label]="i18n.t('nav.home')">
+    <app-logo />
+  </a>
+
+  <nav class="nav" [attr.aria-label]="i18n.t('nav.views')">
+    <a class="nav__item" routerLink="/board" routerLinkActive="nav__item--active">
+      <app-icon name="columns" [size]="14" />
+      {{ i18n.t('nav.board') }}
+    </a>
+    <a class="nav__item" routerLink="/list" routerLinkActive="nav__item--active">
+      <app-icon name="list" [size]="14" />
+      {{ i18n.t('nav.list') }}
+    </a>
+    <a class="nav__item" routerLink="/activity" routerLinkActive="nav__item--active">
+      <app-icon name="activity" [size]="14" />
+      {{ i18n.t('nav.activity') }}
+    </a>
+  </nav>
+
+  <div class="topbar__spacer"></div>
+
+  <div class="input-group search" [hidden]="!showTaskTools()">
+    <span class="input-group__icon">
+      <app-icon name="search" [size]="14" />
+    </span>
+    <input
+      #searchInput
+      class="input"
+      type="search"
+      [placeholder]="i18n.t('topbar.searchPlaceholder')"
+      [attr.aria-label]="i18n.t('topbar.searchAria')"
+      [value]="store.search()"
+      (input)="onSearch($event)"
+    />
+    @if (store.search()) {
+      <button
+        type="button"
+        class="btn btn--ghost btn--icon btn--sm input-group__clear"
+        (click)="clearSearch()"
+        [attr.aria-label]="i18n.t('topbar.clearSearch')"
+      >
+        <app-icon name="x" [size]="14" />
+      </button>
+    } @else {
+      <kbd class="search__kbd" aria-hidden="true">/</kbd>
+    }
+  </div>
+
+  <button type="button" class="btn btn--primary" (click)="openCreateDialog()">
+    <app-icon name="plus" [size]="15" />
+    <span class="topbar__btn-label">{{ i18n.t('topbar.newTask') }}</span>
+  </button>
+
+  <app-connection-indicator />
+
+  <app-language-picker />
+
+  <app-theme-toggle />
+
+  <button
+    type="button"
+    class="topbar__user"
+    [matMenuTriggerFor]="userMenu"
+    [attr.aria-label]="i18n.t('topbar.accountMenu')"
+  >
+    <span class="avatar avatar--lg">{{ userInitials() }}</span>
+    <app-icon name="chevron-down" [size]="13" />
+  </button>
+
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <div class="user-card">
+      <span class="user-card__name">{{ userName() }}</span>
+      <span class="user-card__role">{{ userRole() }}</span>
+    </div>
+
+    <div class="menu-separator"></div>
+
+    <button mat-menu-item routerLink="/team">
+      <app-icon name="users" [size]="15" />
+      {{ i18n.t('menu.team') }}
+    </button>
+
+    <button mat-menu-item routerLink="/profile">
+      <app-icon name="user" [size]="14" />
+      {{ i18n.t('menu.profile') }}
+    </button>
+
+    <button mat-menu-item routerLink="/activity">
+      <app-icon name="activity" [size]="14" />
+      {{ i18n.t('menu.activityLog') }}
+    </button>
+
+    <button mat-menu-item (click)="store.reload()">
+      <app-icon name="refresh" [size]="14" />
+      {{ i18n.t('menu.reload') }}
+    </button>
+
+    <button mat-menu-item class="menu-item--danger" (click)="logout()">
+      <app-icon name="log-out" [size]="14" />
+      {{ i18n.t('menu.logout') }}
+    </button>
+  </mat-menu>
+</header>
+
+@if (showTaskTools()) {
+  <div class="subbar">
+    <div class="stats">
+      <span class="stat">
+        <span class="stat__label">{{ i18n.t('stats.total') }}</span>
+        <span class="stat__value tabular">{{ store.stats().total }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat__label">{{ i18n.t('stats.open') }}</span>
+        <span class="stat__value tabular">{{ store.stats().open }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat__label">{{ i18n.t('stats.taken') }}</span>
+        <span class="stat__value tabular">{{ store.stats().taken }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat__label">{{ i18n.t('stats.completed') }}</span>
+        <span class="stat__value tabular">{{ store.stats().completed }}</span>
+      </span>
+      <span class="stat stat--accent">
+        <span class="stat__label">{{ i18n.t('stats.mine') }}</span>
+        <span class="stat__value tabular">{{ store.stats().mine }}</span>
+      </span>
+      @if (store.stats().overdue > 0) {
+        <span class="stat stat--danger" [matTooltip]="i18n.t('stats.overdueTooltip')">
+          <span class="stat__label">{{ i18n.t('stats.overdue') }}</span>
+          <span class="stat__value tabular">{{ store.stats().overdue }}</span>
+        </span>
+      }
+    </div>
+
+    <div class="subbar__spacer"></div>
+
+    <div class="segmented" role="group" [attr.aria-label]="i18n.t('filters.aria')">
+      @for (filter of filters; track filter.value) {
+        <button
+          type="button"
+          class="segmented__item"
+          [attr.aria-pressed]="store.quickFilter() === filter.value"
+          (click)="setFilter(filter.value)"
+        >
+          {{ i18n.t(filter.labelKey) }}
+        </button>
+      }
+    </div>
+  </div>
+}
+
+<main class="content">
+  <router-outlet />
+</main>

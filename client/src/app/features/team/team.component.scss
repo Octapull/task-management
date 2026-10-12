@@ -1,0 +1,272 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+
+/* Profil ekranıyla aynı okuma genişliği - iki ayar ekranı aynı hissettirsin. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 620px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-4) var(--sp-10);
+}
+
+.page__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.page__title {
+  margin: 0;
+  font-size: var(--fs-22);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-default);
+}
+
+.page__subtitle {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+
+/* --- Kart ----------------------------------------------------------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  font-size: var(--fs-14);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-default);
+}
+
+.panel__hint {
+  margin: 0;
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+}
+
+/* --- Değiştirilemeyen bilgiler -------------------------------------------- */
+.facts {
+  display: flex;
+  gap: var(--sp-8);
+  margin: 0;
+  padding: var(--sp-3);
+  background: var(--bg-inset);
+  border-radius: var(--radius-md);
+}
+
+.facts__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.facts__label {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--fg-subtle);
+}
+
+.facts__value {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--fg-default);
+}
+
+/* --- Form ----------------------------------------------------------------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* --- Davet kodu ----------------------------------------------------------- */
+.code {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+/* Kod satırın gözü en çok takılan öğesi: harfler arası açık, kutu belirgin. */
+.code__value {
+  flex: 1;
+  min-width: 140px;
+  padding: var(--sp-3);
+  background: var(--bg-inset);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-16);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.18em;
+  text-align: center;
+  color: var(--fg-default);
+  user-select: all;
+}
+
+/* --- Üye listesi ---------------------------------------------------------- */
+.members {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-1);
+  border-radius: var(--radius-md);
+}
+
+.member:hover {
+  background: var(--bg-inset);
+}
+
+/* İşlem sürerken satır soluklaşıyor: hangi üyenin beklediği belli olsun. */
+.member--busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.member__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semibold);
+}
+
+.member__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.member__name {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  color: var(--fg-default);
+}
+
+.member__you {
+  padding: 1px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-regular);
+  color: var(--fg-subtle);
+}
+
+/* Uzun e-posta satırı taşırmasın. */
+.member__email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+}
+
+.member__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+.badge {
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  color: var(--fg-muted);
+}
+
+.badge--owner {
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+}
+
+.badge--pending {
+  background: var(--warning-bg);
+  color: var(--warning-fg);
+}
+
+.member__actions {
+  display: flex;
+  gap: var(--sp-1);
+  flex: none;
+}
+
+.member__remove:hover {
+  color: var(--danger-fg);
+}
+
+/* --- Yükleniyor iskeleti -------------------------------------------------- */
+.skeleton--line {
+  height: 14px;
+}
+
+.skeleton--line:first-child {
+  width: 40%;
+}
+
+.skeleton--line:last-child {
+  width: 65%;
+}
+
+@media (max-width: 620px) {
+  .facts {
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  /* Dar ekranda e-posta ve rozetler alt alta düşsün. */
+  .member__meta {
+    display: none;
+  }
+}

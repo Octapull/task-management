@@ -1,0 +1,499 @@
+<div class="page">
+  <a class="back" routerLink="/board">
+    <app-icon name="arrow-left" [size]="14" />
+    {{ i18n.t('detail.back') }}
+  </a>
+
+  @if (loading()) {
+    <div class="panel">
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+    </div>
+  } @else if (notFound()) {
+    <div class="alert" role="alert">
+      <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+      <span>{{ i18n.t('detail.notFound') }}</span>
+    </div>
+  } @else if (task(); as task) {
+    <!-- --- İş bilgileri ---------------------------------------------------- -->
+    <section class="panel">
+      <header class="detail__head">
+        <div class="detail__title-row">
+          <span class="detail__id tabular">#{{ task.id }}</span>
+          <h1 class="detail__title">{{ task.title }}</h1>
+        </div>
+
+        <app-task-menu [task]="task" />
+      </header>
+
+      <div class="chips">
+        <span class="chip chip--status-{{ task.status }}">
+          {{ statusLabel(task.status) }}
+        </span>
+        <span class="chip">{{ i18n.t('detail.priorityChip', { priority: priorityLabel(task.priority) }) }}</span>
+
+        @for (label of labels(); track label.id) {
+          <app-label-chip [label]="label" />
+        }
+
+        <button
+          type="button"
+          class="btn btn--ghost btn--sm"
+          [matMenuTriggerFor]="labelMenu"
+          [disabled]="savingLabels()"
+        >
+          <app-icon name="plus" [size]="14" />
+          Etiket
+        </button>
+      </div>
+
+      <mat-menu #labelMenu="matMenu" class="label-menu">
+        <!-- Çoklu seçim: menü her tıkta kapanmasın diye olay durduruluyor. -->
+        <div class="picker" (click)="$event.stopPropagation()">
+          @for (label of allLabels(); track label.id) {
+            <div class="picker__row">
+              <label class="picker__option">
+                <input
+                  type="checkbox"
+                  class="picker__box"
+                  [checked]="hasLabel(label.id)"
+                  [disabled]="savingLabels()"
+                  (change)="toggleLabel(label.id)"
+                />
+                <app-label-chip [label]="label" />
+              </label>
+
+              <button
+                type="button"
+                class="btn btn--ghost btn--icon btn--sm picker__remove"
+                (click)="deleteLabel(label)"
+                [matTooltip]="i18n.t('detail.labels.removeTooltip')"
+                [attr.aria-label]="i18n.t('detail.labels.removeAria', { name: label.name })"
+              >
+                <app-icon name="trash" [size]="13" />
+              </button>
+            </div>
+          } @empty {
+            <p class="picker__empty">{{ i18n.t('detail.labels.empty') }}</p>
+          }
+
+          <form class="picker__create" [formGroup]="newLabelForm" (ngSubmit)="createLabel()">
+            <div class="picker__colors">
+              @for (color of labelColors; track color) {
+                <button
+                  type="button"
+                  class="swatch swatch--{{ color }}"
+                  [class.swatch--active]="newLabelColor() === color"
+                  (click)="pickColor(color)"
+                  [attr.aria-label]="i18n.t('detail.labels.colorAria', { color })"
+                ></button>
+              }
+            </div>
+
+            <div class="picker__create-row">
+              <input
+                class="input input--sm"
+                formControlName="name"
+                [placeholder]="i18n.t('detail.labels.newName')"
+                [attr.aria-label]="i18n.t('detail.labels.newName')"
+              />
+              <button
+                type="submit"
+                class="btn btn--sm"
+                [disabled]="savingLabels() || newLabelForm.invalid"
+              >
+                <app-icon name="plus" [size]="14" />
+                {{ i18n.t('detail.labels.create') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </mat-menu>
+
+      @if (task.description) {
+        <p class="detail__description">{{ task.description }}</p>
+      } @else {
+        <p class="detail__description detail__description--empty">{{ i18n.t('detail.noDescription') }}</p>
+      }
+
+      <dl class="facts">
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('detail.assignee') }}</dt>
+          <dd class="facts__value">{{ assigneeName() }}</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('detail.creator') }}</dt>
+          <dd class="facts__value">{{ creatorName() }}</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('detail.createdAt') }}</dt>
+          <dd class="facts__value" [matTooltip]="fullDate(task.createdAt)">
+            {{ relative(task.createdAt) }}
+          </dd>
+        </div>
+        @if (task.completedAt) {
+          <div class="facts__item">
+            <dt class="facts__label">{{ i18n.t('detail.completedAt') }}</dt>
+            <dd class="facts__value" [matTooltip]="fullDate(task.completedAt)">
+              {{ relative(task.completedAt) }}
+            </dd>
+          </div>
+        }
+      </dl>
+
+      <div class="detail__actions">
+        @if (canClaim()) {
+          <button type="button" class="btn btn--primary" (click)="claim()">
+            <app-icon name="user-plus" [size]="15" />
+            {{ i18n.t('card.claim') }}
+          </button>
+        } @else if (task.status !== Status.Completed) {
+          <button type="button" class="btn btn--primary" (click)="complete()">
+            <app-icon name="circle-check" [size]="15" />
+            {{ i18n.t('detail.complete') }}
+          </button>
+        }
+
+        <button type="button" class="btn" (click)="edit()">
+          <app-icon name="flag" [size]="15" />
+          {{ i18n.t('detail.edit') }}
+        </button>
+      </div>
+    </section>
+
+    <!-- --- Kontrol listesi -------------------------------------------------- -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="clipboard-list" [size]="15" />
+          {{ i18n.t('detail.checklist.title') }}
+        </h2>
+
+        @if (checklist().length > 0) {
+          <span class="progress__count tabular">
+            {{ doneCount() }} / {{ checklist().length }}
+          </span>
+        }
+      </header>
+
+      @if (checklist().length > 0) {
+        <div
+          class="progress"
+          role="progressbar"
+          [attr.aria-valuenow]="progress()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="progress__bar" [style.width.%]="progress()"></div>
+        </div>
+      }
+
+      <ul class="checklist" cdkDropList (cdkDropListDropped)="dropItem($event)">
+        @for (item of checklist(); track item.id) {
+          <li class="checkitem" cdkDrag>
+            <span class="checkitem__grip" cdkDragHandle aria-hidden="true">
+              <app-icon name="grip" [size]="14" />
+            </span>
+
+            <input
+              type="checkbox"
+              class="checkitem__box"
+              [checked]="item.isDone"
+              (change)="toggleItem(item)"
+              [attr.aria-label]="item.title"
+            />
+
+            @if (editingItemId() === item.id) {
+              <form
+                class="checkitem__edit"
+                [formGroup]="itemEditForm"
+                (ngSubmit)="saveItemEdit(item)"
+              >
+                <input class="input input--sm" formControlName="title" />
+                <button type="submit" class="btn btn--primary btn--sm">
+                  <app-icon name="check" [size]="14" />
+                </button>
+                <button type="button" class="btn btn--sm" (click)="cancelItemEdit()">
+                  <app-icon name="x" [size]="14" />
+                </button>
+              </form>
+            } @else {
+              <span class="checkitem__title" [class.checkitem__title--done]="item.isDone">
+                {{ item.title }}
+              </span>
+
+              <div class="checkitem__actions">
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--icon btn--sm"
+                  (click)="startItemEdit(item)"
+                  [matTooltip]="i18n.t('detail.editTooltip')"
+                  [attr.aria-label]="i18n.t('detail.checklist.editAria')"
+                >
+                  <app-icon name="flag" [size]="14" />
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--icon btn--sm checkitem__remove"
+                  (click)="removeItem(item)"
+                  [matTooltip]="i18n.t('detail.deleteTooltip')"
+                  [attr.aria-label]="i18n.t('detail.checklist.deleteAria')"
+                >
+                  <app-icon name="trash" [size]="14" />
+                </button>
+              </div>
+            }
+          </li>
+        } @empty {
+          <li class="empty">
+            <span class="empty__text">{{ i18n.t('detail.checklist.empty') }}</span>
+          </li>
+        }
+      </ul>
+
+      <form class="additem" [formGroup]="newItemForm" (ngSubmit)="addItem()">
+        <input
+          class="input"
+          formControlName="title"
+          [placeholder]="i18n.t('detail.checklist.placeholder')"
+          [attr.aria-label]="i18n.t('detail.checklist.aria')"
+        />
+        <button type="submit" class="btn" [disabled]="addingItem() || newItemForm.invalid">
+          @if (addingItem()) {
+            <app-icon class="spin" name="loader" [size]="15" />
+          } @else {
+            <app-icon name="plus" [size]="15" />
+          }
+          {{ i18n.t('detail.checklist.add') }}
+        </button>
+      </form>
+    </section>
+
+    <!-- --- Dosya ekleri ----------------------------------------------------- -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="inbox" [size]="15" />
+          {{ i18n.t('detail.files.title') }}
+        </h2>
+
+        <label class="btn btn--sm upload">
+          @if (uploading()) {
+            <app-icon class="spin" name="loader" [size]="14" />
+            {{ i18n.t('detail.files.uploading') }}
+          } @else {
+            <app-icon name="plus" [size]="14" />
+            {{ i18n.t('detail.files.add') }}
+          }
+          <input
+            type="file"
+            class="upload__input"
+            [disabled]="uploading()"
+            (change)="onFileSelected($event)"
+          />
+        </label>
+      </header>
+
+      <ul class="files">
+        @for (file of attachments(); track file.id) {
+          <li class="file" [class.file--busy]="busyAttachmentId() === file.id">
+            <span class="file__icon" aria-hidden="true">
+              <app-icon name="clipboard-list" [size]="15" />
+            </span>
+
+            <div class="file__info">
+              <button
+                type="button"
+                class="file__name"
+                (click)="download(file)"
+                [matTooltip]="i18n.t('detail.files.download', { name: file.fileName })"
+              >
+                {{ file.fileName }}
+              </button>
+              <span class="file__meta">
+                {{ fileSize(file.sizeBytes) }}
+                @if (file.uploadedByName) {
+                  · {{ file.uploadedByName }}
+                }
+                · {{ relative(file.createdAt) }}
+              </span>
+            </div>
+
+            @if (canRemoveAttachment(file)) {
+              <button
+                type="button"
+                class="btn btn--ghost btn--icon btn--sm file__remove"
+                (click)="removeAttachment(file)"
+                [matTooltip]="i18n.t('detail.deleteTooltip')"
+                [attr.aria-label]="i18n.t('detail.files.deleteAria')"
+              >
+                <app-icon name="trash" [size]="14" />
+              </button>
+            }
+          </li>
+        } @empty {
+          <li class="empty">
+            <span class="empty__text">{{ i18n.t('detail.files.empty') }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- --- Yorumlar ve geçmiş ---------------------------------------------- -->
+    <section class="panel">
+      <div class="tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          class="tabs__item"
+          [class.tabs__item--active]="tab() === 'comments'"
+          [attr.aria-selected]="tab() === 'comments'"
+          (click)="setTab('comments')"
+        >
+          <app-icon name="mail" [size]="14" />
+          {{ i18n.t('detail.tabs.comments') }}
+          <span class="count">{{ comments().length }}</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          class="tabs__item"
+          [class.tabs__item--active]="tab() === 'activity'"
+          [attr.aria-selected]="tab() === 'activity'"
+          (click)="setTab('activity')"
+        >
+          <app-icon name="activity" [size]="14" />
+          {{ i18n.t('detail.tabs.history') }}
+          <span class="count">{{ activity().length }}</span>
+        </button>
+      </div>
+
+      @if (tab() === 'comments') {
+        <ul class="comments">
+          @for (comment of comments(); track comment.id) {
+            <li class="comment" [class.comment--busy]="busyCommentId() === comment.id">
+              <div class="comment__head">
+                <span class="comment__author">{{ authorLabel(comment) }}</span>
+                <time
+                  class="comment__time"
+                  [matTooltip]="fullDate(comment.createdAt)"
+                  [attr.datetime]="comment.createdAt"
+                >
+                  {{ relative(comment.createdAt) }}
+                </time>
+
+                @if (comment.editedAt) {
+                  <span class="comment__edited" [matTooltip]="fullDate(comment.editedAt)">
+                    {{ i18n.t('detail.comments.edited') }}
+                  </span>
+                }
+
+                @if (isMine(comment)) {
+                  <div class="comment__actions">
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--icon btn--sm"
+                      (click)="startEdit(comment)"
+                      [matTooltip]="i18n.t('detail.editTooltip')"
+                      [attr.aria-label]="i18n.t('detail.comments.editAria')"
+                    >
+                      <app-icon name="flag" [size]="14" />
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--icon btn--sm comment__remove"
+                      (click)="removeComment(comment)"
+                      matTooltip="Sil"
+                      [attr.aria-label]="i18n.t('detail.comments.deleteAria')"
+                    >
+                      <app-icon name="trash" [size]="14" />
+                    </button>
+                  </div>
+                }
+              </div>
+
+              @if (editingId() === comment.id) {
+                <form class="comment__edit" [formGroup]="editForm" (ngSubmit)="saveEdit(comment)">
+                  <textarea
+                    class="input textarea"
+                    formControlName="body"
+                    rows="3"
+                    [attr.aria-label]="i18n.t('detail.comments.editAria')"
+                  ></textarea>
+
+                  <div class="comment__edit-actions">
+                    <button type="button" class="btn btn--sm" (click)="cancelEdit()">{{ i18n.t('common.cancel') }}</button>
+                    <button type="submit" class="btn btn--primary btn--sm">
+                      <app-icon name="check" [size]="14" />
+                      {{ i18n.t('common.save') }}
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <p class="comment__body">{{ comment.body }}</p>
+              }
+            </li>
+          } @empty {
+            <li class="empty">
+              <span class="empty__text">{{ i18n.t('detail.comments.empty') }}</span>
+            </li>
+          }
+        </ul>
+
+        <form class="composer" [formGroup]="commentForm" (ngSubmit)="post()">
+          <textarea
+            class="input textarea"
+            formControlName="body"
+            rows="3"
+            [placeholder]="i18n.t('detail.comments.placeholder')"
+            [attr.aria-label]="i18n.t('detail.comments.newAria')"
+          ></textarea>
+
+          <div class="composer__actions">
+            <button
+              type="submit"
+              class="btn btn--primary"
+              [disabled]="posting() || commentForm.invalid"
+            >
+              @if (posting()) {
+                <app-icon class="spin" name="loader" [size]="15" />
+                {{ i18n.t('detail.comments.posting') }}
+              } @else {
+                <app-icon name="send" [size]="15" />
+                {{ i18n.t('detail.comments.post') }}
+              }
+            </button>
+          </div>
+        </form>
+      } @else {
+        <ul class="history">
+          @for (entry of activity(); track entry.id) {
+            <li class="history__item">
+              <span class="history__dot" aria-hidden="true"></span>
+              <div class="history__body">
+                <span class="history__text">
+                  {{ entry.actorName ?? i18n.t('activity.unknownUser') }}
+                  @if (entry.details) {
+                    <span class="history__details">— {{ entry.details }}</span>
+                  }
+                </span>
+                <time
+                  class="history__time"
+                  [matTooltip]="fullDate(entry.createdAt)"
+                  [attr.datetime]="entry.createdAt"
+                >
+                  {{ relative(entry.createdAt) }}
+                </time>
+              </div>
+            </li>
+          } @empty {
+            <li class="empty">
+              <span class="empty__text">{{ i18n.t('detail.history.empty') }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

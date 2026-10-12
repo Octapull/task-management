@@ -1,0 +1,96 @@
+<form class="dialog" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <header class="dialog__head">
+    <h2 class="dialog__title">
+      @if (editingTask) {
+        {{ i18n.t('dialog.editTitle') }}
+        <span class="dialog__id tabular">#{{ editingTask.id }}</span>
+      } @else {
+        {{ i18n.t('dialog.newTitle') }}
+      }
+    </h2>
+    <button
+      type="button"
+      class="btn btn--ghost btn--icon btn--sm"
+      (click)="cancel()"
+      [attr.aria-label]="i18n.t('dialog.close')"
+    >
+      <app-icon name="x" [size]="15" />
+    </button>
+  </header>
+
+  <div class="dialog__body">
+    <div class="field">
+      <label class="field__label" for="title">{{ i18n.t('dialog.title') }}</label>
+      <input
+        id="title"
+        class="input"
+        type="text"
+        formControlName="title"
+        maxlength="200"
+        [placeholder]="i18n.t('dialog.titlePlaceholder')"
+        cdkFocusInitial
+        [attr.aria-invalid]="titleInvalid"
+      />
+      @if (titleInvalid) {
+        <span class="field__error">{{ i18n.t('dialog.titleRequired') }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="description">{{ i18n.t('dialog.description') }}</label>
+      <textarea
+        id="description"
+        class="textarea"
+        formControlName="description"
+        rows="3"
+        [placeholder]="i18n.t('dialog.descriptionPlaceholder')"
+      ></textarea>
+    </div>
+
+    <div class="dialog__row">
+      <div class="field">
+        <span class="field__label">{{ i18n.t('dialog.priority') }}</span>
+        <div class="segmented" role="group" [attr.aria-label]="i18n.t('dialog.priority')">
+          @for (priority of priorities; track priority) {
+            <button
+              type="button"
+              class="segmented__item"
+              [attr.aria-pressed]="form.controls.priority.value === priority"
+              (click)="setPriority(priority)"
+            >
+              {{ priorityLabel(priority) }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="dueDate">{{ i18n.t('dialog.dueDate') }}</label>
+        <input id="dueDate" class="input" type="date" formControlName="dueDate" />
+      </div>
+    </div>
+
+    @if (!editingTask) {
+      <p class="dialog__note">
+        <app-icon name="inbox" [size]="13" />
+        {{ i18n.t('dialog.note') }}
+      </p>
+    }
+  </div>
+
+  <footer class="dialog__actions">
+    <button type="button" class="btn" (click)="cancel()">{{ i18n.t('common.cancel') }}</button>
+    <button type="submit" class="btn btn--primary" [disabled]="submitting()">
+      @if (submitting()) {
+        <app-icon class="spin" name="loader" [size]="15" />
+        {{ i18n.t('dialog.saving') }}
+      } @else if (editingTask) {
+        <app-icon name="check" [size]="15" />
+        {{ i18n.t('dialog.saveChanges') }}
+      } @else {
+        <app-icon name="plus" [size]="15" />
+        {{ i18n.t('dialog.create') }}
+      }
+    </button>
+  </footer>
+</form>

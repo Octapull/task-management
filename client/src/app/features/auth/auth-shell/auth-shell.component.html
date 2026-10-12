@@ -1,0 +1,149 @@
+<div class="auth">
+  <section class="auth__main">
+    <header class="auth__brand">
+      <app-logo />
+
+      <div class="auth__controls">
+        <app-theme-toggle />
+        <app-language-picker />
+      </div>
+    </header>
+
+    <div class="auth__content">
+      <ng-content />
+    </div>
+
+    <footer class="auth__footer">
+      <span>© {{ year }} İş Takip</span>
+      <span class="auth__footer-sep">·</span>
+      <span>{{ i18n.t('auth.tagline') }}</span>
+    </footer>
+  </section>
+
+  <aside class="auth__aside">
+    <div class="auth__aside-inner">
+      <h2 class="auth__aside-title">{{ i18n.t('auth.aside.title') }}</h2>
+      <p class="auth__aside-text">{{ i18n.t('auth.aside.text') }}</p>
+
+      <ul class="auth__features">
+        <li class="auth__feature">
+          <span class="auth__feature-icon"><app-icon name="columns" /></span>
+          <div>
+            <strong>{{ i18n.t('auth.feature.board.title') }}</strong>
+            <span>{{ i18n.t('auth.feature.board.text') }}</span>
+          </div>
+        </li>
+        <li class="auth__feature">
+          <span class="auth__feature-icon"><app-icon name="activity" /></span>
+          <div>
+            <strong>{{ i18n.t('auth.feature.live.title') }}</strong>
+            <span>{{ i18n.t('auth.feature.live.text') }}</span>
+          </div>
+        </li>
+        <li class="auth__feature">
+          <span class="auth__feature-icon"><app-icon name="users" /></span>
+          <div>
+            <strong>{{ i18n.t('auth.feature.pool.title') }}</strong>
+            <span>{{ i18n.t('auth.feature.pool.text') }}</span>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Panonun küçültülmüş bir önizlemesi: bir kart "Boştaki İşler"den
+           "Devam Edenler"e sürükleniyor, bıraktığı ve gideceği yer kesik
+           çizgili boşluklarla gösteriliyor. Tamamen dekoratif olduğu için
+           aria-hidden; ekran okuyucuya üstteki özellik listesi yetiyor. -->
+      <div class="mock" aria-hidden="true">
+        <div class="mock__chrome">
+          <span class="mock__dot"></span>
+          <span class="mock__dot"></span>
+          <span class="mock__dot"></span>
+          <span class="mock__chrome-title">{{ i18n.t('auth.mock.title') }}</span>
+        </div>
+
+        <div class="mock__board">
+          <div class="mock__col">
+            <div class="mock__col-head">
+              <app-icon name="inbox" [size]="10" />
+              <span>{{ i18n.t('auth.mock.open') }}</span>
+              <span class="mock__count">2</span>
+            </div>
+            <!-- Sürüklenen kartın ayrıldığı boşluk. -->
+            <div class="mock__slot"></div>
+            <div class="mock__card">
+              <span class="mock__title mock__title--md"></span>
+              <span class="mock__meta">
+                <i class="mock__pill mock__pill--warn"></i>
+                <i class="mock__ava">MK</i>
+              </span>
+            </div>
+            <div class="mock__card">
+              <span class="mock__title mock__title--sm"></span>
+              <span class="mock__meta">
+                <i class="mock__pill"></i>
+                <i class="mock__ava mock__ava--ghost">+</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="mock__col">
+            <div class="mock__col-head">
+              <app-icon name="clock" [size]="10" />
+              <span>{{ i18n.t('auth.mock.taken') }}</span>
+              <span class="mock__count">3</span>
+            </div>
+            <div class="mock__card">
+              <span class="mock__title mock__title--lg"></span>
+              <span class="mock__meta">
+                <i class="mock__pill mock__pill--danger"></i>
+                <i class="mock__ava mock__ava--me">AY</i>
+              </span>
+            </div>
+            <div class="mock__card">
+              <span class="mock__title mock__title--sm"></span>
+              <span class="mock__meta">
+                <i class="mock__pill mock__pill--info"></i>
+                <i class="mock__ava">SD</i>
+              </span>
+            </div>
+            <!-- Kartın bırakılacağı yer. -->
+            <div class="mock__slot mock__slot--target"></div>
+          </div>
+
+          <div class="mock__col">
+            <div class="mock__col-head">
+              <app-icon name="circle-check" [size]="10" />
+              <span>{{ i18n.t('auth.mock.done') }}</span>
+              <span class="mock__count">5</span>
+            </div>
+            <div class="mock__card mock__card--done">
+              <span class="mock__title mock__title--md"></span>
+              <span class="mock__meta">
+                <i class="mock__pill mock__pill--ok"></i>
+                <i class="mock__ava">EK</i>
+              </span>
+            </div>
+            <div class="mock__card mock__card--done">
+              <span class="mock__title mock__title--sm"></span>
+              <span class="mock__meta">
+                <i class="mock__pill mock__pill--ok"></i>
+                <i class="mock__ava">AY</i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Havada duran kart: kolonların akışının dışında, mutlak
+               konumlandırılıp iki kolon arasında gidip geliyor. -->
+          <div class="mock__card mock__card--drag">
+            <span class="mock__title mock__title--lg"></span>
+            <span class="mock__meta">
+              <app-icon class="mock__grip" name="grip" [size]="10" />
+              <i class="mock__pill mock__pill--warn"></i>
+              <i class="mock__ava mock__ava--me">AY</i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>

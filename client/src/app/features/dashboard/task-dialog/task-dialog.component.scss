@@ -1,0 +1,91 @@
+.dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(460px, calc(100vw - 2 * var(--sp-4)));
+}
+
+.dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.dialog__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-14);
+}
+
+.dialog__id {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-regular);
+  color: var(--fg-subtle);
+}
+
+.dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+}
+
+.dialog__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.dialog__row .field:last-child .input {
+  width: 160px;
+}
+
+.dialog__note {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-inset);
+  color: var(--fg-muted);
+  font-size: var(--fs-12);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  border-top: var(--border-width) solid var(--border);
+  background: var(--bg-page);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Tarih girişinin yerleşik takvim ikonunu temaya uyduruyoruz. */
+input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+input[type='date']:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+:host-context(:root[data-theme='dark'])
+  input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+@media (max-width: 520px) {
+  .dialog__row {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog__row .field:last-child .input {
+    width: 100%;
+  }
+}

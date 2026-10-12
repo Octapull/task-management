@@ -1,0 +1,181 @@
+@if (store.loadError(); as error) {
+  <div class="alert" role="alert">
+    <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+    <span>{{ error }}</span>
+    <button type="button" class="btn btn--sm" (click)="store.reload()">
+      <app-icon name="refresh" [size]="13" />
+      {{ i18n.t('common.retry') }}
+    </button>
+  </div>
+}
+
+<div class="table-wrap surface">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="table__num">#</th>
+
+        <th>
+          <button type="button" class="table__sort" (click)="sortBy('title')">
+            {{ i18n.t('list.title') }}
+            @if (sortKey() === 'title') {
+              <app-icon [name]="sortIcon('title')" [size]="12" />
+            }
+          </button>
+        </th>
+
+        <th class="table__narrow">
+          <button type="button" class="table__sort" (click)="sortBy('priority')">
+            {{ i18n.t('list.priority') }}
+            @if (sortKey() === 'priority') {
+              <app-icon [name]="sortIcon('priority')" [size]="12" />
+            }
+          </button>
+        </th>
+
+        <th class="table__narrow">
+          <button type="button" class="table__sort" (click)="sortBy('status')">
+            {{ i18n.t('list.status') }}
+            @if (sortKey() === 'status') {
+              <app-icon [name]="sortIcon('status')" [size]="12" />
+            }
+          </button>
+        </th>
+
+        <th class="table__narrow">{{ i18n.t('list.assignee') }}</th>
+
+        <th class="table__narrow table__hide-md">{{ i18n.t('list.creator') }}</th>
+
+        <th class="table__narrow">
+          <button type="button" class="table__sort" (click)="sortBy('dueDate')">
+            {{ i18n.t('list.due') }}
+            @if (sortKey() === 'dueDate') {
+              <app-icon [name]="sortIcon('dueDate')" [size]="12" />
+            }
+          </button>
+        </th>
+
+        <th class="table__narrow table__hide-sm">
+          <button type="button" class="table__sort" (click)="sortBy('startedAt')">
+            {{ i18n.t('list.started') }}
+            @if (sortKey() === 'startedAt') {
+              <app-icon [name]="sortIcon('startedAt')" [size]="12" />
+            }
+          </button>
+        </th>
+
+        <th class="table__narrow table__hide-sm">{{ i18n.t('list.finished') }}</th>
+
+        <th class="table__narrow table__hide-sm">
+          <button type="button" class="table__sort" (click)="sortBy('createdAt')">
+            {{ i18n.t('list.created') }}
+            @if (sortKey() === 'createdAt') {
+              <app-icon [name]="sortIcon('createdAt')" [size]="12" />
+            }
+          </button>
+        </th>
+
+        <th class="table__actions">
+          <span class="sr-only">{{ i18n.t('list.actions') }}</span>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @if (!store.loaded()) {
+        @for (row of skeletonRows; track row) {
+          <tr>
+            <td colspan="11">
+              <div class="skeleton" style="height: 14px"></div>
+            </td>
+          </tr>
+        }
+      } @else {
+        @for (task of rows(); track task.id) {
+          <tr>
+            <td class="table__num tabular">{{ task.id }}</td>
+
+            <td class="table__title-cell">
+              <a class="table__title" [routerLink]="['/task', task.id]">
+                {{ task.title }}
+              </a>
+              @if (task.description) {
+                <span class="table__desc">{{ task.description }}</span>
+              }
+            </td>
+
+            <td>
+              <span class="badge" [class]="priorityClass(task)">
+                <app-icon [name]="priorityIcon(task)" [size]="11" [strokeWidth]="2.25" />
+                {{ priorityLabel(task) }}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge" [class]="statusClass(task)">
+                <span class="badge__dot"></span>
+                {{ statusLabel(task) }}
+              </span>
+            </td>
+
+            <td>
+              @if (task.assignedUserId === null) {
+                <button type="button" class="btn btn--ghost btn--sm" (click)="claim(task)">
+                  <app-icon name="user-plus" [size]="13" />
+                  {{ i18n.t('card.claim') }}
+                </button>
+              } @else {
+                <span class="table__assignee">
+                  <span class="avatar" [class.avatar--me]="isMine(task)">
+                    {{ assigneeInitials(task) }}
+                  </span>
+                  <span class="table__assignee-name">
+                    {{ assigneeName(task) }}
+                  </span>
+                </span>
+              }
+            </td>
+
+            <td class="table__hide-md table__muted">
+              {{ creatorName(task) }}
+            </td>
+
+            <td class="tabular" [class]="dueClass(task)">
+              {{ dueLabel(task) }}
+            </td>
+
+            <td class="table__hide-sm table__muted tabular" [matTooltip]="startedTooltip(task)">
+              {{ startedLabel(task) }}
+            </td>
+
+            <td class="table__hide-sm table__muted tabular" [matTooltip]="completedTooltip(task)">
+              {{ completedLabel(task) }}
+            </td>
+
+            <td class="table__hide-sm table__muted" [matTooltip]="createdTooltip(task)">
+              {{ createdLabel(task) }}
+            </td>
+
+            <td class="table__actions">
+              <app-task-menu [task]="task" />
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="11">
+              <div class="empty">
+                <app-icon name="inbox" [size]="20" />
+                <span class="empty__title">{{ i18n.t('list.empty.title') }}</span>
+                <span class="empty__text">{{ i18n.t('list.empty.text') }}</span>
+                <button type="button" class="btn btn--sm" (click)="openCreateDialog()">
+                  <app-icon name="plus" [size]="13" />
+                  {{ i18n.t('topbar.newTask') }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>

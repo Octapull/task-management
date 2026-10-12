@@ -1,0 +1,122 @@
+<div class="page">
+  <header class="page__head">
+    <div>
+      <h1 class="page__title">{{ i18n.t('activity.title') }}</h1>
+      <p class="page__subtitle">{{ i18n.t('activity.subtitle') }}</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn--ghost btn--icon"
+      (click)="load()"
+      [matTooltip]="i18n.t('activity.refresh')"
+      [attr.aria-label]="i18n.t('activity.refreshAria')"
+    >
+      <app-icon name="refresh" [size]="15" />
+    </button>
+  </header>
+
+  <div class="segmented" role="group" [attr.aria-label]="i18n.t('activity.filterAria')">
+    @for (option of filters; track option.value) {
+      <button
+        type="button"
+        class="segmented__item"
+        [attr.aria-pressed]="filter() === option.value"
+        (click)="setFilter(option.value)"
+      >
+        {{ i18n.t(option.labelKey) }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="feed">
+      @for (row of [1, 2, 3, 4, 5]; track row) {
+        <div class="skeleton skeleton--row"></div>
+      }
+    </div>
+  } @else if (loadError(); as error) {
+    <div class="alert" role="alert">
+      <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+      <span>{{ error }}</span>
+      <button type="button" class="btn btn--sm" (click)="load()">
+        <app-icon name="refresh" [size]="13" />
+        {{ i18n.t('common.retry') }}
+      </button>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty">
+      <app-icon name="activity" [size]="22" />
+      <span class="empty__title">{{ i18n.t('activity.empty.title') }}</span>
+      <span class="empty__text">{{ i18n.t('activity.empty.text') }}</span>
+    </div>
+  } @else {
+    @for (group of groups(); track group.key) {
+      <section class="day">
+        <h2 class="day__label">{{ group.label }}</h2>
+
+        <ul class="feed">
+          @for (entry of group.entries; track entry.id) {
+            <li class="entry">
+              <span class="entry__icon badge" [class]="badgeClass(entry)">
+                <app-icon [name]="icon(entry)" [size]="12" />
+              </span>
+
+              <div class="entry__body">
+                <p class="entry__text">
+                  @for (segment of segments(entry); track $index) {
+                    @switch (segment.kind) {
+                      @case ('actor') {
+                        <strong class="entry__actor">{{ segment.value }}</strong>
+                      }
+                      @case ('target') {
+                        <span class="entry__target">{{ segment.value }}</span>
+                      }
+                      @case ('task') {
+                        <span class="entry__task">
+                          <span class="entry__task-id tabular">#{{ segment.taskId }}</span>
+                          {{ segment.value }}
+                        </span>
+                      }
+                      @default {
+                        {{ segment.value }}
+                      }
+                    }
+                  }
+                </p>
+
+                @if (entry.details) {
+                  <p class="entry__details">{{ entry.details }}</p>
+                }
+              </div>
+
+              <time
+                class="entry__time"
+                [matTooltip]="fullTime(entry)"
+                [attr.datetime]="entry.createdAt"
+              >
+                {{ relativeTime(entry) }}
+              </time>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (hasMore()) {
+      <div class="load-more">
+        <button type="button" class="btn" [disabled]="loadingMore()" (click)="loadMore()">
+          @if (loadingMore()) {
+            <app-icon class="spin" name="loader" [size]="14" />
+            {{ i18n.t('activity.loading') }}
+          } @else {
+            <app-icon name="chevron-down" [size]="14" />
+            {{ i18n.t('activity.loadMore') }}
+          }
+        </button>
+
+        <span class="load-more__count tabular"> {{ entries().length }} / {{ total() }} </span>
+      </div>
+    }
+  }
+</div>

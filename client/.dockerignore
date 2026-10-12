@@ -1,0 +1,10 @@
+# npm ci konteyner içinde çalışıyor; host'un node_modules'ü (platforma özel
+# ikili dosyalarıyla birlikte) kopyalanmamalı.
+node_modules/
+dist/
+.angular/
+
+.git/
+.vscode/
+Dockerfile
+.dockerignore

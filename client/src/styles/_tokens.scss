@@ -1,0 +1,222 @@
+/* =============================================================================
+   Tasarım token'ları
+   -----------------------------------------------------------------------------
+   Tek kaynak: renk, tipografi, boşluk, kenarlık ve gölge değerleri sadece burada
+   tanımlanır. Bileşenler ham hex/px yazmaz, hep bu değişkenleri kullanır.
+
+   Renk yaklaşımı: nötr slate ağırlıklı. Vurgu rengi (accent) sadece birincil
+   aksiyonlarda ve odak halkasında; durum renkleri sadece rozetlerde kullanılır.
+   ============================================================================= */
+
+:root {
+  /* --- Tipografi ---------------------------------------------------------- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', 'Cascadia Mono',
+    'Roboto Mono', Menlo, Consolas, monospace;
+
+  /* Yoğun (dense) bir arayüz için ölçek 11px'ten başlıyor. */
+  --fs-11: 0.6875rem;
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-22: 1.375rem;
+  --fs-28: 1.75rem;
+
+  --lh-tight: 1.25;
+  --lh-normal: 1.45;
+  --lh-relaxed: 1.6;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* Küçük punto başlıklar için hafif negatif tracking, okunurluğu artırır. */
+  --tracking-tight: -0.011em;
+  --tracking-caps: 0.04em;
+
+  /* --- Boşluk (4px tabanlı) ----------------------------------------------- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+
+  /* --- Köşe yarıçapı ------------------------------------------------------ */
+  /* Bilinçli olarak küçük tutuldu; "balon" görünümünden kaçınıyoruz. */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  /* --- Yapı --------------------------------------------------------------- */
+  --border-width: 1px;
+  --control-h-sm: 28px;
+  --control-h-md: 32px;
+  --control-h-lg: 38px;
+  --topbar-h: 52px;
+
+  /* --- Hareket ------------------------------------------------------------ */
+  /* Mikro etkileşimler kısa ve keskin; "yumuşak yavaş" animasyon yok. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 90ms;
+  --dur-normal: 150ms;
+
+  --z-sticky: 20;
+  --z-overlay: 100;
+}
+
+/* =============================================================================
+   Açık tema (varsayılan)
+   ============================================================================= */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  /* Marka nötrleri: sayfa açık gri, kartlar beyazımsı. Griler nötr tutuldu;
+     sıcak tonlama arayüze sarımsı bir hava veriyordu. */
+  --bg-page: #f5f5f5;
+  --bg-surface: #fcfcfc;
+  --bg-inset: #f0f1f2;
+  --bg-hover: rgba(8, 28, 73, 0.05);
+  --bg-active: rgba(8, 28, 73, 0.09);
+  --bg-selected: #f6e6dd;
+
+  --border: #e3e5e7;
+  --border-strong: #cbcfd3;
+  --border-inverse: rgba(255, 255, 255, 0.12);
+
+  --fg-default: #081c49;
+  /* İkincil metinler nötr gri: sıcak kahve tonu turuncuyla çakışıp arayüzü
+     sarımsı gösteriyordu. subtle her zaman muted'dan açık olmalı. */
+  --fg-muted: #585d64;
+  --fg-subtle: #63686f;
+  --fg-on-solid: #fcfcfc;
+
+  /* --accent dolgu rengi (buton zemini, odak halkası, kenarlık).
+     Marka turuncusu açık zeminde metin olarak okunmaz (#ff7200 / beyaz = 2.7:1),
+     bu yüzden metin ve ikonlar için koyulaştırılmış --accent-text kullanılıyor;
+     turuncu zemin üstündeki yazı ise lacivert (--accent-fg, 6.0:1). */
+  --accent: #ff7200;
+  --accent-hover: #e56700;
+  --accent-active: #cc5b00;
+  --accent-fg: #081c49;
+  --accent-text: #ad4700;
+  --accent-subtle: #f6e6dd;
+  --accent-border: #f2c6a3;
+
+  --success-fg: #146c2e;
+  --success-bg: #e8f5ec;
+  --success-border: #b0dcbe;
+
+  --warning-fg: #8a5a00;
+  --warning-bg: #fdf3e0;
+  --warning-border: #ecd39c;
+
+  --danger-fg: #b42318;
+  --danger-bg: #fdeceb;
+  --danger-border: #f3bcb7;
+  --danger-solid: #b42318;
+  --danger-solid-hover: #99201a;
+
+  --info-fg: #1f5aa8;
+  --info-bg: #eaf1fe;
+  --info-border: #b9d3fb;
+
+  /* Orta öncelik rozeti. */
+  --purple-fg: #6b3fa0;
+  --purple-bg: #f3ecfb;
+  --purple-border: #dcc7f3;
+
+  /* Gölgeler nötr siyah yerine lacivert tonlu; açık gri zeminde daha temiz. */
+  --shadow-sm: 0 1px 2px rgba(8, 28, 73, 0.06);
+  --shadow-md: 0 1px 2px rgba(8, 28, 73, 0.06), 0 6px 16px rgba(8, 28, 73, 0.08);
+  --shadow-lg:
+    0 2px 4px rgba(8, 28, 73, 0.06), 0 12px 32px rgba(8, 28, 73, 0.14);
+  --shadow-drag:
+    0 2px 4px rgba(8, 28, 73, 0.08), 0 14px 28px rgba(8, 28, 73, 0.18);
+
+  --scrollbar-thumb: #c6cbd0;
+  --scrollbar-thumb-hover: #aeb4bb;
+}
+
+/* =============================================================================
+   Koyu tema
+   ============================================================================= */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Nötr gri zeminler, mavi tonlama yok. Saf siyaha yaklaşmıyoruz: koyu temada
+     çok koyu zemin + çok parlak yazı gözü yoruyor. Kart (surface) sayfadan
+     belirgin biçimde açık - koyu temada derinlik gölgeyle değil, yüzey
+     açıldıkça yükseliyor hissiyle veriliyor. */
+  --bg-page: #17191c;
+  --bg-surface: #23262a;
+  --bg-inset: #2e3135;
+  --bg-hover: rgba(255, 255, 255, 0.06);
+  --bg-active: rgba(255, 255, 255, 0.1);
+  --bg-selected: #3a2410;
+
+  --border: #3a3e43;
+  --border-strong: #4d5158;
+  --border-inverse: rgba(255, 255, 255, 0.14);
+
+  /* Saf beyaz yerine yumuşatılmış gri: 15.6:1 parlaklık farkı uzun kullanımda
+     yorucuydu, 11.7:1 hâlâ AA'nın çok üstünde ama gözü zorlamıyor. */
+  --fg-default: #dcdee1;
+  --fg-muted: #a1a4a8;
+  --fg-subtle: #96999e;
+  --fg-on-solid: #ffffff;
+
+  --accent: #ff7200;
+  --accent-hover: #ff8724;
+  --accent-active: #ff9a45;
+  /* Turuncu zemin üstünde beyaz yazı 2.7:1; koyu nötr yazı 6.4:1. */
+  --accent-fg: #17191c;
+  /* Metin için açılmış turuncu: saf #ff7200 koyu zeminde titreşiyor. */
+  --accent-text: #ff9a4d;
+  --accent-subtle: #3a2410;
+  --accent-border: #6b4520;
+
+  /* Rozet zeminleri de yükseltildi: sayfa açılınca eski koyu zeminler kartın
+     üstünde delik gibi duruyordu. */
+  --success-fg: #6fd48a;
+  --success-bg: #16301f;
+  --success-border: #2c6440;
+
+  --warning-fg: #e0b45c;
+  --warning-bg: #332811;
+  --warning-border: #6a5220;
+
+  --danger-fg: #f5928a;
+  --danger-bg: #361c1a;
+  --danger-border: #7a3630;
+
+  --danger-solid: #cf4034;
+  --danger-solid-hover: #e05548;
+
+  /* Mavi yerine nötr gri: bilgi rozeti artık renkle değil konumla ayrışıyor. */
+  --info-fg: #c2c5c9;
+  --info-bg: #2b2e32;
+  --info-border: #4d5158;
+
+  /* Orta öncelik rozeti. */
+  --purple-fg: #cfb0f2;
+  --purple-bg: #302645;
+  --purple-border: #503f6e;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-drag: 0 2px 4px rgba(0, 0, 0, 0.4), 0 14px 28px rgba(0, 0, 0, 0.6);
+
+  --scrollbar-thumb: #43474d;
+  --scrollbar-thumb-hover: #565b62;
+}

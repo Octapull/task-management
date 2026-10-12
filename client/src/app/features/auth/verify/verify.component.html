@@ -1,0 +1,111 @@
+<app-auth-shell>
+  <div class="form-panel">
+    <header class="form-panel__head">
+      <span class="verify__seal" aria-hidden="true">
+        <app-icon name="shield-check" [size]="20" />
+      </span>
+
+      <h1 class="form-panel__title">{{ i18n.t('verify.title') }}</h1>
+      <p class="form-panel__subtitle">
+        {{ i18n.t('verify.subtitle', { email: pending()?.email ?? '' }) }}
+        @if (pending()?.teamName; as teamName) {
+          {{ i18n.t('verify.teamNote', { team: teamName }) }}
+        }
+      </p>
+    </header>
+
+    @if (formError(); as error) {
+      <div class="alert" role="alert">
+        <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    @if (expired()) {
+      <div class="alert alert--warning" role="alert">
+        <app-icon class="alert__icon" name="clock" [size]="14" />
+        <span>{{ i18n.t('verify.expired') }}</span>
+      </div>
+    }
+
+    <!-- Kod üretildi ama posta gidemedi: kullanıcı boş yere beklemesin. -->
+    @if (pending()?.emailSent === false) {
+      <div class="alert alert--warning" role="alert">
+        <app-icon class="alert__icon" name="triangle-alert" [size]="14" />
+        <span>{{ i18n.t('verify.notSent') }}</span>
+      </div>
+    }
+
+    <form class="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <app-otp-input
+          [(value)]="code"
+          [disabled]="submitting()"
+          [invalid]="formError() !== null"
+          (completed)="onCompleted($event)"
+        />
+
+        <div class="verify__meta">
+          @if (expired()) {
+            <span class="field__hint">{{ i18n.t('verify.expiredHint') }}</span>
+          } @else {
+            <span class="field__hint">
+              <app-icon name="clock" [size]="13" />
+              {{ i18n.t('verify.countdown', { time: countdown() }) }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Backend mock e-posta modundayken kod yanıtta da dönüyor; gerçek
+           posta kutusu olmadan denemek için gösteriliyor. -->
+      @if (pending()?.devCode; as devCode) {
+        <div class="verify__dev">
+          <app-icon name="triangle-alert" [size]="13" />
+          <span>{{ i18n.t('verify.devMode') }} <code>{{ devCode }}</code></span>
+        </div>
+      }
+
+      <button
+        type="submit"
+        class="btn btn--primary btn--lg btn--block"
+        [disabled]="submitting() || expired()"
+      >
+        @if (submitting()) {
+          <app-icon class="spin" name="loader" [size]="15" />
+          {{ i18n.t('verify.submitting') }}
+        } @else {
+          <app-icon name="shield-check" [size]="15" />
+          {{ i18n.t('verify.submit') }}
+        }
+      </button>
+
+      <button
+        type="button"
+        class="btn btn--block"
+        [disabled]="!canResend()"
+        (click)="resend()"
+      >
+        @if (resending()) {
+          <app-icon class="spin" name="loader" [size]="15" />
+          {{ i18n.t('verify.sending') }}
+        } @else if (resendIn() > 0) {
+          <app-icon name="clock" [size]="15" />
+          {{ i18n.t('verify.resendIn', { seconds: resendIn() }) }}
+        } @else {
+          <app-icon name="send" [size]="15" />
+          {{ i18n.t('verify.resend') }}
+        }
+      </button>
+    </form>
+
+    <div class="verify__foot">
+      <button type="button" class="btn btn--ghost btn--sm" (click)="startOver()">
+        <app-icon name="arrow-left" [size]="14" />
+        {{ i18n.t('verify.useOtherEmail') }}
+      </button>
+
+      <a class="verify__link" routerLink="/login">{{ i18n.t('login.submit') }}</a>
+    </div>
+  </div>
+</app-auth-shell>

@@ -1,0 +1,197 @@
+<div class="page">
+  <header class="page__head">
+    <h1 class="page__title">{{ i18n.t('team.title') }}</h1>
+    <p class="page__subtitle">{{ i18n.t('team.subtitle') }}</p>
+  </header>
+
+  @if (loading()) {
+    <div class="panel">
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+    </div>
+  } @else if (loadError(); as error) {
+    <div class="alert" role="alert">
+      <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+      <span>{{ error }}</span>
+      <button type="button" class="btn btn--sm" (click)="load()">
+        <app-icon name="refresh" [size]="13" />
+        {{ i18n.t('common.retry') }}
+      </button>
+    </div>
+  } @else if (team(); as team) {
+    <!-- --- Ekip bilgileri -------------------------------------------------- -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="building" [size]="15" />
+          {{ i18n.t('team.info') }}
+        </h2>
+      </header>
+
+      <dl class="facts">
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('team.memberCount') }}</dt>
+          <dd class="facts__value tabular">{{ memberCount() }}</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('team.yourRole') }}</dt>
+          <dd class="facts__value">{{ i18n.t(isOwner() ? 'role.owner' : 'role.member') }}</dd>
+        </div>
+      </dl>
+
+      @if (isOwner()) {
+        <form class="form" [formGroup]="nameForm" (ngSubmit)="saveName()" novalidate>
+          <div class="field">
+            <label class="field__label" for="teamName">{{ i18n.t('team.name') }}</label>
+            <input
+              id="teamName"
+              class="input"
+              type="text"
+              formControlName="name"
+              [attr.aria-invalid]="showNameError()"
+            />
+            @if (showNameError()) {
+              <span class="field__error">{{ i18n.t('team.nameInvalid') }}</span>
+            }
+          </div>
+
+          <div class="form__actions">
+            <button type="submit" class="btn btn--primary" [disabled]="savingName()">
+              @if (savingName()) {
+                <app-icon class="spin" name="loader" [size]="15" />
+                {{ i18n.t('dialog.saving') }}
+              } @else {
+                <app-icon name="check" [size]="15" />
+                {{ i18n.t('common.save') }}
+              }
+            </button>
+          </div>
+        </form>
+      } @else {
+        <dl class="facts">
+          <div class="facts__item">
+            <dt class="facts__label">{{ i18n.t('team.name') }}</dt>
+            <dd class="facts__value">{{ team.name }}</dd>
+          </div>
+        </dl>
+      }
+    </section>
+
+    <!-- --- Davet kodu ------------------------------------------------------ -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="key-round" [size]="15" />
+          {{ i18n.t('team.inviteCode') }}
+        </h2>
+      </header>
+
+      <p class="panel__hint">{{ i18n.t('team.inviteHint') }}</p>
+
+      <div class="code">
+        <code class="code__value tabular">{{ team.teamCode }}</code>
+
+        <button type="button" class="btn btn--sm" (click)="copyCode()" [matTooltip]="i18n.t('team.copyTooltip')">
+          <app-icon name="copy" [size]="14" />
+          {{ i18n.t('team.copy') }}
+        </button>
+
+        @if (isOwner()) {
+          <button
+            type="button"
+            class="btn btn--sm"
+            [disabled]="regenerating()"
+            (click)="regenerateCode()"
+            [matTooltip]="i18n.t('team.regenerateTooltip')"
+          >
+            @if (regenerating()) {
+              <app-icon class="spin" name="loader" [size]="14" />
+              {{ i18n.t('team.regenerating') }}
+            } @else {
+              <app-icon name="refresh" [size]="14" />
+              {{ i18n.t('team.regenerate') }}
+            }
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- --- Üyeler ---------------------------------------------------------- -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="users" [size]="15" />
+          {{ i18n.t('team.members') }}
+        </h2>
+        <span class="count">{{ memberCount() }}</span>
+      </header>
+
+      <ul class="members">
+        @for (member of team.members; track member.id) {
+          <li class="member" [class.member--busy]="busyMemberId() === member.id">
+            <span
+              class="member__avatar"
+              aria-hidden="true"
+              [matTooltip]="i18n.t('team.joinedAt', { when: joinedAt(member) })"
+            >
+              {{ initials(member) }}
+            </span>
+
+            <div class="member__info">
+              <span class="member__name">
+                {{ member.fullName }}
+                @if (isMe(member)) {
+                  <span class="member__you">{{ i18n.t('team.you') }}</span>
+                }
+              </span>
+              <span class="member__email">{{ member.email }}</span>
+            </div>
+
+            <div class="member__meta">
+              <span class="badge" [class.badge--owner]="member.role === 'Owner'">
+                {{ roleLabel(member) }}
+              </span>
+
+              @if (!member.isEmailConfirmed) {
+                <span class="badge badge--pending" [matTooltip]="i18n.t('team.pendingTooltip')">
+                  {{ i18n.t('team.pending') }}
+                </span>
+              }
+            </div>
+
+            @if (isOwner() && !isMe(member)) {
+              <div class="member__actions">
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--icon btn--sm"
+                  [disabled]="busyMemberId() !== null"
+                  (click)="transferOwnership(member)"
+                  [matTooltip]="i18n.t('team.transferTooltip')"
+                  [attr.aria-label]="i18n.t('team.transferAria', { name: member.fullName })"
+                >
+                  <app-icon name="shield-check" [size]="15" />
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--icon btn--sm member__remove"
+                  [disabled]="busyMemberId() !== null"
+                  (click)="removeMember(member)"
+                  [matTooltip]="i18n.t('team.removeTooltip')"
+                  [attr.aria-label]="i18n.t('team.removeAria', { name: member.fullName })"
+                >
+                  <app-icon name="trash" [size]="15" />
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+
+      @if (!isOwner()) {
+        <p class="panel__hint">{{ i18n.t('team.memberOnlyHint') }}</p>
+      }
+    </section>
+  }
+</div>

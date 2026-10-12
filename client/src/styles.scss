@@ -1,0 +1,13 @@
+/* =============================================================================
+   Global stil giriş noktası
+   -----------------------------------------------------------------------------
+   Sıra önemli: önce font ve token'lar, sonra reset, sonra primitifler,
+   en son üçüncü parti (Material) override'ları.
+   ============================================================================= */
+
+/* Inter, npm paketinden yerel olarak sunuluyor (bkz. angular.json > styles) -
+   dış CDN'e bağımlılık yok. */
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/primitives';
+@use 'styles/material';

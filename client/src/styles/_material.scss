@@ -1,0 +1,201 @@
+@use '@angular/material' as mat;
+
+/* =============================================================================
+   Angular Material entegrasyonu
+   -----------------------------------------------------------------------------
+   Material'ı yalnızca overlay tabanlı bileşenler için kullanıyoruz:
+   dialog, snackbar, menu, tooltip. Buton/input/kart gibi görsel omurgayı
+   kendi primitiflerimiz taşıyor - Material'ın varsayılan yüksek boşluklu ve
+   yuvarlak görünümü istediğimiz yoğun SaaS estetiğine uymuyor.
+
+   Aşağıda Material'ın sistem token'ları (--mat-sys-*) kendi token'larımıza
+   bağlanıyor; böylece açık/koyu tema geçişi Material bileşenlerinde de
+   otomatik çalışıyor.
+   ============================================================================= */
+
+/* Taban palet turuncu: aşağıda --mat-sys-* token'larının çoğunu kendi
+   değişkenlerimize bağlıyoruz, ama ripple / seçim gibi override etmediğimiz
+   Material iç token'ları bu paletten türüyor. Azure kalsaydı oralarda mavi
+   sızardı. */
+html {
+  @include mat.theme(
+    (
+      color: mat.$orange-palette,
+      typography: 'Inter',
+      density: -2,
+    )
+  );
+}
+
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  --mat-sys-surface: var(--bg-surface);
+  --mat-sys-surface-container: var(--bg-surface);
+  --mat-sys-surface-container-high: var(--bg-surface);
+  --mat-sys-surface-container-highest: var(--bg-inset);
+  --mat-sys-surface-container-low: var(--bg-surface);
+  --mat-sys-on-surface: var(--fg-default);
+  --mat-sys-on-surface-variant: var(--fg-muted);
+  --mat-sys-outline: var(--border-strong);
+  --mat-sys-outline-variant: var(--border);
+  --mat-sys-primary: var(--accent);
+  --mat-sys-on-primary: var(--accent-fg);
+  --mat-sys-error: var(--danger-fg);
+  --mat-sys-body-medium-font: var(--font-sans);
+  --mat-sys-body-large-font: var(--font-sans);
+}
+
+/* --- Dialog ---------------------------------------------------------------
+   İçerik dolgusunu bileşenin kendisi yönetiyor, konteyner sadece çerçeve. */
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: var(--radius-lg);
+  --mdc-dialog-container-color: var(--bg-surface);
+}
+
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  border: var(--border-width) solid var(--border);
+  box-shadow: var(--shadow-lg);
+  overflow: visible;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__content {
+  padding: 0;
+  color: var(--fg-default);
+  font-family: var(--font-sans);
+}
+
+.cdk-overlay-dark-backdrop {
+  background: rgba(10, 10, 11, 0.44);
+  backdrop-filter: blur(1px);
+}
+
+/* --- Snackbar (toast) ------------------------------------------------------
+   Sol kenarındaki 3px'lik renkli şerit dışında tamamen nötr; bildirim tipi
+   renkle değil, ikon + metinle anlatılıyor. */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--bg-surface);
+  --mdc-snackbar-supporting-text-color: var(--fg-default);
+  --mdc-snackbar-container-shape: var(--radius-md);
+  --mdc-snackbar-supporting-text-size: var(--fs-13);
+  --mdc-snackbar-supporting-text-weight: var(--fw-medium);
+  --mdc-snackbar-supporting-text-font: var(--font-sans);
+  --mat-snack-bar-button-color: var(--fg-muted);
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  border: var(--border-width) solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  min-width: 280px;
+  padding-right: var(--sp-2) !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__label {
+  padding: var(--sp-3) var(--sp-3);
+}
+
+.toast--success .mdc-snackbar__surface {
+  border-left-color: var(--success-fg);
+}
+
+.toast--error .mdc-snackbar__surface {
+  border-left-color: var(--danger-fg);
+}
+
+.toast--info .mdc-snackbar__surface {
+  border-left-color: var(--accent);
+}
+
+/* --- Menü ------------------------------------------------------------------ */
+.mat-mdc-menu-panel {
+  --mat-menu-container-shape: var(--radius-md);
+  --mat-menu-container-color: var(--bg-surface);
+  --mat-menu-item-label-text-font: var(--font-sans);
+  --mat-menu-item-label-text-size: var(--fs-13);
+  --mat-menu-item-label-text-color: var(--fg-default);
+  border: var(--border-width) solid var(--border);
+  box-shadow: var(--shadow-md) !important;
+  min-width: 180px !important;
+}
+
+.mat-mdc-menu-content {
+  padding: var(--sp-1) !important;
+}
+
+.mat-mdc-menu-item {
+  min-height: 30px !important;
+  border-radius: var(--radius-sm);
+  padding: 0 var(--sp-2) !important;
+}
+
+.mat-mdc-menu-item:hover:not([disabled]) {
+  background: var(--bg-hover) !important;
+}
+
+.mat-mdc-menu-item .mat-mdc-menu-item-text {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-13);
+}
+
+.mat-mdc-menu-item.menu-item--danger .mat-mdc-menu-item-text {
+  color: var(--danger-fg);
+}
+
+/* Menü içindeki ayırıcı çizgi. */
+.mat-mdc-menu-panel .menu-separator {
+  height: var(--border-width);
+  background: var(--border);
+  margin: var(--sp-1) 0;
+}
+
+/* --- Tooltip --------------------------------------------------------------- */
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-color: var(--fg-default);
+  --mdc-plain-tooltip-supporting-text-color: var(--bg-surface);
+  --mdc-plain-tooltip-container-shape: var(--radius-sm);
+  --mdc-plain-tooltip-supporting-text-size: var(--fs-12);
+  --mdc-plain-tooltip-supporting-text-font: var(--font-sans);
+}
+
+/* =============================================================================
+   CDK sürükle-bırak
+   -----------------------------------------------------------------------------
+   Sürüklenen kartın kopyası (preview) ve bırakılacağı boşluk (placeholder)
+   overlay katmanında render edildiği için stilleri global olmak zorunda.
+   ============================================================================= */
+
+.cdk-drag-preview {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-drag);
+  /* Hafif eğim, kartın "elde tutulduğu" hissini verir. */
+  transform: rotate(1.5deg);
+  opacity: 0.97;
+  cursor: grabbing;
+}
+
+.cdk-drag-placeholder {
+  opacity: 1;
+  border: 1px dashed var(--border-strong) !important;
+  background: var(--bg-inset) !important;
+  box-shadow: none !important;
+}
+
+/* Placeholder'ın içeriği görünmesin, sadece boşluk dursun. */
+.cdk-drag-placeholder > * {
+  visibility: hidden;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms var(--ease-out);
+}
+
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 180ms var(--ease-out);
+}
+
+body.cdk-drag-in-progress {
+  cursor: grabbing;
+}

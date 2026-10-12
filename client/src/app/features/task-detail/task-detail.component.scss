@@ -1,0 +1,705 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+
+/* Ekip ve profil ekranlarından biraz geniş: yorumlar daha çok yer istiyor. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-4) var(--sp-10);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  align-self: flex-start;
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+
+.back:hover {
+  color: var(--fg-default);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+/* --- Başlık --------------------------------------------------------------- */
+.detail__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.detail__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.detail__id {
+  flex: none;
+  font-size: var(--fs-13);
+  color: var(--fg-subtle);
+}
+
+.detail__title {
+  margin: 0;
+  font-size: var(--fs-20);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-default);
+  /* Uzun başlık sarsın, taşmasın. */
+  overflow-wrap: anywhere;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.chip {
+  padding: 2px var(--sp-3);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+}
+
+/* Durum rengi: boşta nötr, devam eden vurgulu, tamamlanan yeşil. */
+.chip--status-1 {
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+}
+
+.chip--status-2 {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+
+.detail__description {
+  margin: 0;
+  font-size: var(--fs-14);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-default);
+  /* Kullanıcının yazdığı satır sonları korunsun. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.detail__description--empty {
+  color: var(--fg-subtle);
+  font-style: italic;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-6);
+  margin: 0;
+  padding: var(--sp-3);
+  background: var(--bg-inset);
+  border-radius: var(--radius-md);
+}
+
+.facts__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.facts__label {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--fg-subtle);
+}
+
+.facts__value {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--fg-default);
+}
+
+.detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* --- Sekmeler ------------------------------------------------------------- */
+.tabs {
+  display: flex;
+  gap: var(--sp-1);
+  padding-bottom: var(--sp-3);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.tabs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.tabs__item:hover {
+  background: var(--bg-inset);
+  color: var(--fg-default);
+}
+
+.tabs__item--active {
+  background: var(--bg-inset);
+  color: var(--fg-default);
+}
+
+/* --- Yorumlar ------------------------------------------------------------- */
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.comment--busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.comment__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.comment__author {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-default);
+}
+
+.comment__time,
+.comment__edited {
+  font-size: var(--fs-12);
+  color: var(--fg-subtle);
+}
+
+.comment__edited {
+  font-style: italic;
+}
+
+/* Eylemler yalnızca satırın üzerine gelince belirginleşsin. */
+.comment__actions {
+  display: flex;
+  gap: var(--sp-1);
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.comment:hover .comment__actions,
+.comment__actions:focus-within {
+  opacity: 1;
+}
+
+.comment__remove:hover {
+  color: var(--danger-fg);
+}
+
+.comment__body {
+  margin: 0;
+  font-size: var(--fs-14);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-default);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.comment__edit,
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.comment__edit-actions,
+.composer__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+}
+
+.textarea {
+  min-height: 72px;
+  padding: var(--sp-3);
+  font-family: inherit;
+  line-height: var(--lh-normal);
+  resize: vertical;
+}
+
+.composer {
+  padding-top: var(--sp-4);
+  border-top: var(--border-width) solid var(--border);
+}
+
+/* --- Geçmiş --------------------------------------------------------------- */
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.history__dot {
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--fg-subtle);
+}
+
+.history__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.history__text {
+  font-size: var(--fs-13);
+  color: var(--fg-default);
+}
+
+.history__details {
+  color: var(--fg-muted);
+}
+
+.history__time {
+  font-size: var(--fs-12);
+  color: var(--fg-subtle);
+}
+
+/* --- Boş durum ve iskelet -------------------------------------------------- */
+.empty {
+  padding: var(--sp-5) 0;
+  text-align: center;
+}
+
+.empty__text {
+  font-size: var(--fs-13);
+  color: var(--fg-subtle);
+}
+
+.skeleton--line {
+  height: 14px;
+}
+
+.skeleton--line:first-child {
+  width: 45%;
+}
+
+@media (max-width: 620px) {
+  .facts {
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  /* Dar ekranda eylemler hep görünsün: hover diye bir şey yok. */
+  .comment__actions {
+    opacity: 1;
+  }
+}
+
+/* --- Kontrol listesi ------------------------------------------------------- */
+.progress {
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.progress__bar {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--success-fg);
+  transition: width var(--dur-normal) var(--ease-standard);
+}
+
+.progress__count {
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkitem {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.checkitem:hover {
+  background: var(--bg-inset);
+}
+
+/* Tutamaç yalnızca satırın üzerine gelince belirginleşsin. */
+.checkitem__grip {
+  display: flex;
+  flex: none;
+  color: var(--fg-subtle);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.checkitem:hover .checkitem__grip {
+  opacity: 1;
+}
+
+.checkitem__box {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  accent-color: var(--success-fg);
+  cursor: pointer;
+}
+
+.checkitem__title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-13);
+  color: var(--fg-default);
+  overflow-wrap: anywhere;
+}
+
+/* Tamamlanan adım listede kalıyor ama geri plana çekiliyor. */
+.checkitem__title--done {
+  color: var(--fg-subtle);
+  text-decoration: line-through;
+}
+
+.checkitem__edit {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1;
+}
+
+.checkitem__actions {
+  display: flex;
+  gap: var(--sp-1);
+  flex: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.checkitem:hover .checkitem__actions,
+.checkitem__actions:focus-within {
+  opacity: 1;
+}
+
+.checkitem__remove:hover {
+  color: var(--danger-fg);
+}
+
+/* Sürüklenen satır panelden kopmuş gibi görünsün. */
+.cdk-drag-preview {
+  box-shadow: var(--shadow-lg);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.additem {
+  display: flex;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.additem .input {
+  flex: 1;
+}
+
+@media (max-width: 620px) {
+  /* Dokunmatikte hover yok: tutamaç ve eylemler hep görünür. */
+  .checkitem__grip,
+  .checkitem__actions {
+    opacity: 1;
+  }
+}
+
+/* --- Etiket seçici --------------------------------------------------------- */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 260px;
+  max-width: 320px;
+  padding: var(--sp-2);
+}
+
+.picker__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1);
+  border-radius: var(--radius-md);
+}
+
+.picker__row:hover {
+  background: var(--bg-inset);
+}
+
+.picker__option {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.picker__box {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.picker__remove {
+  flex: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.picker__row:hover .picker__remove,
+.picker__remove:focus-visible {
+  opacity: 1;
+  color: var(--danger-fg);
+}
+
+.picker__empty {
+  margin: 0;
+  padding: var(--sp-3) var(--sp-2);
+  font-size: var(--fs-12);
+  color: var(--fg-subtle);
+}
+
+.picker__create {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.picker__colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+}
+
+/* Renk seçimi: küçük daireler, seçili olan halkalı. */
+.swatch {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--swatch);
+  cursor: pointer;
+}
+
+.swatch--active {
+  border-color: var(--fg-default);
+}
+
+.swatch--gray {
+  --swatch: var(--fg-muted);
+}
+.swatch--blue {
+  --swatch: var(--info-fg);
+}
+.swatch--green {
+  --swatch: var(--success-fg);
+}
+.swatch--yellow {
+  --swatch: var(--warning-fg);
+}
+.swatch--orange {
+  --swatch: var(--accent);
+}
+.swatch--red {
+  --swatch: var(--danger-fg);
+}
+.swatch--purple {
+  --swatch: light-dark(#7c3aed, #c4b5fd);
+}
+.swatch--teal {
+  --swatch: light-dark(#0d9488, #5eead4);
+}
+
+.picker__create-row {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.picker__create-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Dosya ekleri ---------------------------------------------------------- */
+
+/* Gerçek dosya girişi gizli; tıklanan şey onu saran etiket. Böylece tarayıcının
+   biçimlendirilemeyen "Dosya Seç" düğmesi yerine kendi butonumuz görünüyor. */
+.upload {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.upload__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2);
+  border-radius: var(--radius-md);
+}
+
+.file:hover {
+  background: var(--bg-inset);
+}
+
+.file--busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.file__icon {
+  display: flex;
+  flex: none;
+  color: var(--fg-subtle);
+}
+
+.file__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Dosya adı buton: indirme token gerektirdiği için düz bağlantı olamıyor. */
+.file__name {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  color: var(--accent-text);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.file__name:hover {
+  text-decoration: underline;
+}
+
+.file__meta {
+  font-size: var(--fs-12);
+  color: var(--fg-subtle);
+}
+
+.file__remove {
+  flex: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.file:hover .file__remove,
+.file__remove:focus-visible {
+  opacity: 1;
+  color: var(--danger-fg);
+}
+
+@media (max-width: 620px) {
+  .file__remove {
+    opacity: 1;
+  }
+}
