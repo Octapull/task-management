@@ -1,0 +1,176 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  height: 100%;
+  min-height: 0;
+  padding: var(--sp-4);
+}
+
+.table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs-13);
+}
+
+/* --- Başlık satırı -------------------------------------------------------- */
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-surface);
+  border-bottom: var(--border-width) solid var(--border);
+  text-align: left;
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--fg-subtle);
+  white-space: nowrap;
+}
+
+.table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.table__sort:hover {
+  color: var(--fg-default);
+}
+
+/* --- Gövde ---------------------------------------------------------------- */
+.table tbody td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--border-width) solid var(--border);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover td {
+  background: var(--bg-hover);
+}
+
+.table__num {
+  width: 52px;
+  color: var(--fg-subtle);
+  font-size: var(--fs-12);
+}
+
+.table__narrow {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.table__actions {
+  width: 40px;
+  text-align: right;
+}
+
+.table__title-cell {
+  min-width: 240px;
+}
+
+.table__title {
+  display: block;
+  font-weight: var(--fw-medium);
+  line-height: 1.35;
+}
+
+.table__desc {
+  display: block;
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52ch;
+}
+
+.table__muted {
+  color: var(--fg-muted);
+  font-size: var(--fs-12);
+  white-space: nowrap;
+}
+
+.table__assignee {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.table__assignee-name {
+  white-space: nowrap;
+}
+
+.avatar--me {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+}
+
+/* Geciken ve yaklaşan teslim tarihleri hücre içinde renkle ayrışıyor. */
+.cell--danger {
+  color: var(--danger-fg);
+  font-weight: var(--fw-medium);
+}
+
+.cell--warning {
+  color: var(--warning-fg);
+  font-weight: var(--fw-medium);
+}
+
+.empty {
+  padding: var(--sp-10) var(--sp-4);
+  color: var(--fg-subtle);
+}
+
+/* Dar ekranda ikincil sütunları gizleyip tabloyu okunur tutuyoruz. */
+@media (max-width: 1100px) {
+  .table__hide-md {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  :host {
+    padding: var(--sp-3);
+  }
+
+  .table__hide-sm {
+    display: none;
+  }
+
+  .table__assignee-name {
+    display: none;
+  }
+}
+
+/* Satır başlığı artık bağlantı: rengi tablodan devralıyor. */
+a.table__title {
+  color: inherit;
+}
+
+a.table__title:hover {
+  text-decoration: underline;
+}

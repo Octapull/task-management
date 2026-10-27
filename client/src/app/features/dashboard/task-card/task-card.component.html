@@ -1,0 +1,87 @@
+<article class="card" [class.card--done]="isCompleted()">
+  <div class="card__head">
+    <h3 class="card__title" [matTooltip]="titleTooltip()" matTooltipShowDelay="600">
+      <a class="card__link" [routerLink]="['/task', task().id]">{{ task().title }}</a>
+    </h3>
+
+    <app-task-menu class="card__menu" [task]="task()" />
+  </div>
+
+  @if (task().description) {
+    <p class="card__desc">{{ task().description }}</p>
+  }
+
+  @if (labels().length > 0) {
+    <div class="card__labels">
+      @for (label of labels(); track label.id) {
+        <app-label-chip [label]="label" [small]="true" />
+      }
+    </div>
+  }
+
+  <div class="card__meta">
+    <span class="card__id tabular">#{{ task().id }}</span>
+
+    <span class="badge" [class]="priorityClass()">
+      <app-icon [name]="priorityIcon()" [size]="11" [strokeWidth]="2.25" />
+      {{ priorityLabel() }}
+    </span>
+
+    <span class="badge" [class]="statusClass()">
+      <span class="badge__dot"></span>
+      {{ statusLabel() }}
+    </span>
+
+    @if (dueLabel()) {
+      <span class="badge" [class]="dueClass()" [matTooltip]="i18n.t('card.due', { date: dueLabel() })">
+        <app-icon [name]="isOverdue() ? 'triangle-alert' : 'calendar'" [size]="11" />
+        {{ dueLabel() }}
+      </span>
+    }
+
+    @if (task().checklistTotal > 0) {
+      <span
+        class="badge"
+        [class.badge--checklist-done]="task().checklistDone === task().checklistTotal"
+        [matTooltip]="
+          i18n.t('card.checklist', {
+            done: task().checklistDone,
+            total: task().checklistTotal,
+          })
+        "
+      >
+        <app-icon name="clipboard-list" [size]="12" />
+        <span class="tabular"> {{ task().checklistDone }}/{{ task().checklistTotal }} </span>
+      </span>
+    }
+
+    @if (timeline(); as info) {
+      <!-- Devam edende geçen süre, tamamlananda başlangıç -> bitiş aralığı. -->
+      <span class="badge" [matTooltip]="info.tooltip">
+        <app-icon [name]="info.icon" [size]="11" />
+        {{ info.label }}
+      </span>
+    }
+
+    <span class="card__spacer"></span>
+
+    @if (showCreator()) {
+      <!-- Oluşturan kişi: soluk avatar, atanan kişiden ayrışsın diye. -->
+      <span class="avatar avatar--ghost" [matTooltip]="creatorTooltip()">
+        {{ creatorInitials() }}
+      </span>
+    }
+
+    @if (isUnassigned()) {
+      <!-- Boştaki işi tek tıkla üstlenme; sürükle-bırakın kısayolu. -->
+      <button type="button" class="card__claim" (click)="claim()">
+        <app-icon name="user-plus" [size]="12" />
+        {{ i18n.t('card.claim') }}
+      </button>
+    } @else {
+      <span class="avatar" [class.avatar--me]="isMine()" [matTooltip]="i18n.t('card.assignee', { name: assigneeName() })">
+        {{ assigneeInitials() }}
+      </span>
+    }
+  </div>
+</article>

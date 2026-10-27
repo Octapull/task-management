@@ -1,0 +1,44 @@
+/* Giriş ve kayıt formlarının ortak yerleşimi. */
+
+.form-panel {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.form-panel__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.form-panel__title {
+  font-size: var(--fs-22);
+}
+
+.form-panel__subtitle {
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.form-panel__alt {
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+
+.form-panel__alt a {
+  font-weight: var(--fw-medium);
+}
+
+/* Şifre görünürlük butonu inputun içinde durduğu için sağ boşluk açıyoruz. */
+.input-group:has(.input-group__clear) .input {
+  padding-right: var(--sp-10);
+}

@@ -1,0 +1,445 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.auth {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg-surface);
+}
+
+/* --- Sol taraf: form ------------------------------------------------------ */
+.auth__main {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: var(--sp-6);
+}
+
+.auth__brand {
+  display: flex;
+  align-items: center;
+  /* Logo solda kalsin, tema ve dil denetimleri saga yaslansin. */
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.auth__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.auth__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8) 0;
+}
+
+.auth__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-12);
+  color: var(--fg-subtle);
+}
+
+.auth__footer-sep {
+  color: var(--border-strong);
+}
+
+/* --- Sağ taraf: ürün paneli -----------------------------------------------
+   Arka plan, 24px'lik nokta ızgarası - dikkat dağıtmayan ince bir doku.
+   Gradyan/parlama yok. */
+.auth__aside {
+  display: none;
+  position: relative;
+  border-left: var(--border-width) solid var(--border);
+  background-color: var(--bg-page);
+  background-image: radial-gradient(circle at 1px 1px, var(--border-strong) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Izgaranın üstüne, okunurluğu artırmak için hafif bir örtü. */
+.auth__aside::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-page) 55%, transparent),
+    color-mix(in srgb, var(--bg-page) 92%, transparent)
+  );
+}
+
+.auth__aside-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  max-width: 420px;
+  padding: var(--sp-10);
+}
+
+.auth__aside-title {
+  font-size: var(--fs-22);
+  line-height: 1.3;
+  margin-bottom: var(--sp-3);
+}
+
+.auth__aside-text {
+  font-size: var(--fs-13);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+  margin-bottom: var(--sp-8);
+}
+
+.auth__features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.auth__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.auth__feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--fg-muted);
+}
+
+.auth__feature strong {
+  display: block;
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  margin-bottom: 2px;
+}
+
+.auth__feature span {
+  display: block;
+  font-size: var(--fs-12);
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+}
+
+@media (min-width: 900px) {
+  .auth {
+    /* Form tarafı sabit genişlikte kalsın, panel kalan alanı doldursun. */
+    grid-template-columns: minmax(420px, 46%) 1fr;
+  }
+
+  .auth__main {
+    padding: var(--sp-8);
+  }
+
+  .auth__aside {
+    display: block;
+  }
+}
+
+/* --- Mini pano önizlemesi ---------------------------------------------------
+   Sağ paneldeki özellik listesinin altında duran, tıklanamayan soyut bir UI
+   parçası. Gerçek panonun kolon düzenini birebir taklit ediyor: üç kolon, kart
+   yığınları ve iki kolon arasında gidip gelen "sürüklenen" bir kart.
+
+   Ölçüler burada px cinsinden: bileşen bilinçli olarak tipografi/boşluk
+   ölçeğinin altında kalıyor (maket bir ekranın küçültülmüş hali), o yüzden
+   sp-* token'ları yerine yerel değişkenler kullanılıyor. Renkler ise tamamen
+   token'lardan geliyor, koyu temada kendiliğinden uyuyor. */
+.mock {
+  /* Sürüklenen kartın konumu bu değerlerden hesaplanıyor; birini değiştirirsen
+     .mock__card--drag içindeki calc'lar da güncellenir (hepsi var kullanıyor). */
+  --mock-pad: 10px;
+  --mock-gap: 8px;
+  --mock-row-gap: 6px;
+  --mock-card-h: 40px;
+  /* kolon başlığı (16px) + altındaki satır boşluğu */
+  --mock-head-h: 22px;
+
+  display: none;
+  margin-top: var(--sp-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Pencere çubuğu: maketin "uygulama ekranı" olduğunu anlatan tek ipucu. */
+.mock__chrome {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 var(--mock-pad);
+  border-bottom: var(--border-width) solid var(--border);
+  background: var(--bg-inset);
+}
+
+.mock__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+}
+
+.mock__chrome-title {
+  margin-left: auto;
+  font-size: var(--fs-11);
+  line-height: 1;
+  color: var(--fg-subtle);
+}
+
+.mock__board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--mock-gap);
+  padding: var(--mock-pad);
+  background: var(--bg-page);
+}
+
+.mock__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mock-row-gap);
+  min-width: 0;
+}
+
+.mock__col-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  font-size: var(--fs-11);
+  line-height: 1;
+  color: var(--fg-muted);
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.mock__count {
+  margin-left: auto;
+  padding: 0 4px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  color: var(--fg-subtle);
+}
+
+.mock__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: var(--mock-card-h);
+  padding: 6px 7px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.mock__card--done {
+  opacity: 0.65;
+}
+
+/* Kartın ayrıldığı / bırakılacağı boşluk. */
+.mock__slot {
+  height: var(--mock-card-h);
+  border: var(--border-width) dashed var(--border-strong);
+  border-radius: var(--radius-md);
+}
+
+.mock__slot--target {
+  border-color: var(--accent-border);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  animation: mock-target 6s var(--ease-standard) infinite;
+}
+
+/* Başlık yerine soyut çubuklar - okunacak bir şey yok, sadece ritim. */
+.mock__title {
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  opacity: 0.85;
+}
+
+.mock__title--sm {
+  width: 45%;
+}
+.mock__title--md {
+  width: 62%;
+}
+.mock__title--lg {
+  width: 78%;
+}
+
+.mock__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mock__grip {
+  color: var(--fg-subtle);
+}
+
+/* Rozet yerine minik renkli çubuk. */
+.mock__pill {
+  width: 16px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+}
+
+.mock__pill--warn {
+  background: var(--warning-border);
+}
+.mock__pill--danger {
+  background: var(--danger-border);
+}
+.mock__pill--info {
+  background: var(--info-border);
+}
+.mock__pill--ok {
+  background: var(--success-border);
+}
+
+.mock__ava {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  /* Maket ölçeğinde baş harfler: tipografi ölçeğinin altında kalıyor. */
+  font-size: 8px;
+  font-style: normal;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0;
+  color: var(--fg-subtle);
+}
+
+.mock__ava--me {
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+}
+
+.mock__ava--ghost {
+  border: var(--border-width) dashed var(--border-strong);
+  background: transparent;
+}
+
+/* Havadaki kart: kolon akışının dışında, ilk kolondan ikinciye gidip geliyor.
+   Genişliği kolon genişliğiyle aynı olsun diye ızgara hesabı elle yapılıyor. */
+.mock__card--drag {
+  position: absolute;
+  left: var(--mock-pad);
+  top: calc(var(--mock-pad) + var(--mock-head-h));
+  width: calc((100% - var(--mock-pad) - var(--mock-pad) - var(--mock-gap) - var(--mock-gap)) / 3);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-drag);
+  animation: mock-drag 6s var(--ease-standard) infinite;
+}
+
+@keyframes mock-drag {
+  0%,
+  8% {
+    transform: translate(0, 0) rotate(-1.5deg);
+  }
+  /* Yol ortası: kart hafifçe büyüyor ve yatıyor - elde taşınıyor hissi. */
+  27% {
+    transform: translate(
+        calc(50% + var(--mock-gap)),
+        calc(var(--mock-card-h) + var(--mock-row-gap))
+      )
+      rotate(-3.5deg) scale(1.04);
+  }
+  /* İkinci kolonun üçüncü sırasına (iki kart + iki satır boşluğu) iniyor. */
+  46%,
+  64% {
+    transform: translate(
+        calc(100% + var(--mock-gap)),
+        calc(var(--mock-card-h) + var(--mock-card-h) + var(--mock-row-gap) + var(--mock-row-gap))
+      )
+      rotate(1.5deg);
+  }
+  82% {
+    transform: translate(
+        calc(50% + var(--mock-gap)),
+        calc(var(--mock-card-h) + var(--mock-row-gap))
+      )
+      rotate(-3.5deg) scale(1.04);
+  }
+  96%,
+  100% {
+    transform: translate(0, 0) rotate(-1.5deg);
+  }
+}
+
+/* Kart yaklaşırken hedef boşluk hafifçe belirginleşiyor. */
+@keyframes mock-target {
+  0%,
+  20% {
+    opacity: 0.45;
+  }
+  46%,
+  64% {
+    opacity: 1;
+  }
+  90%,
+  100% {
+    opacity: 0.45;
+  }
+}
+
+/* Hareket tercihi kapalıysa kart yolun ortasında donuyor - "sürükleniyor"
+   fikri duruyor, animasyon yok. */
+@media (prefers-reduced-motion: reduce) {
+  .mock__card--drag {
+    animation: none;
+    transform: translate(
+        calc(50% + var(--mock-gap)),
+        calc(var(--mock-card-h) + var(--mock-row-gap))
+      )
+      rotate(-3.5deg);
+  }
+
+  .mock__slot--target {
+    animation: none;
+  }
+}
+
+/* Maket sadece panelin göründüğü ve dikeyde yeterli yer olan ekranlarda.
+   Kısa ekranlarda özellik listesi öncelikli. */
+@media (min-width: 900px) and (min-height: 760px) {
+  .mock {
+    display: block;
+  }
+}

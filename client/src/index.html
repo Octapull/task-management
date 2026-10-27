@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>İş Takip Sistemi</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Ekip içi iş takibi - anlık güncellenen Kanban panosu."
+    />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      // Tema, Angular yüklenmeden önce uygulanıyor; aksi halde koyu temada
+      // ilk boyamada beyaz bir parlama (flash of white) görünüyor.
+      //
+      // Varsayılan AÇIK tema. İşletim sisteminin koyu tema tercihine
+      // (prefers-color-scheme) bilerek uyulmuyor: uygulamayı ilk kez açan
+      // herkesin aynı görünümle karşılanması isteniyor. Kullanıcı üst
+      // çubuktaki düğmeyle koyu temaya geçerse tercihi localStorage'a
+      // yazılıyor ve sonraki ziyaretlerde o kazanıyor.
+      (function () {
+        try {
+          var stored = localStorage.getItem('tms.theme');
+          document.documentElement.dataset['theme'] =
+            stored === 'light' || stored === 'dark' ? stored : 'light';
+        } catch (e) {
+          document.documentElement.dataset['theme'] = 'light';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

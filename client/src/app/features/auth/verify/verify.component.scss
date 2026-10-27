@@ -1,0 +1,65 @@
+@use '../auth-form';
+
+/* Başlığın üstündeki simge - ekranın "güvenlik adımı" olduğunu belli ediyor. */
+.verify__seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--sp-2);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-inset);
+  color: var(--accent);
+}
+
+.form-panel__subtitle strong {
+  color: var(--fg-default);
+  font-weight: var(--fw-medium);
+}
+
+.verify__meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verify__meta .field__hint {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Geliştirme ipucu: bilgi kutusu, hata değil - dikkat çeksin ama
+   alarm vermesin. */
+.verify__dev {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--border-width) dashed var(--warning-border);
+  border-radius: var(--radius-md);
+  background: var(--warning-bg);
+  color: var(--warning-fg);
+  font-size: var(--fs-12);
+}
+
+.verify__dev code {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.1em;
+}
+
+.verify__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.verify__link {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+}

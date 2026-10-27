@@ -1,0 +1,227 @@
+<div class="page">
+  <header class="page__head">
+    <h1 class="page__title">{{ i18n.t('profile.title') }}</h1>
+    <p class="page__subtitle">{{ i18n.t('profile.subtitle') }}</p>
+  </header>
+
+  @if (loading()) {
+    <div class="panel">
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+    </div>
+  } @else if (loadError(); as error) {
+    <div class="alert" role="alert">
+      <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+      <span>{{ error }}</span>
+      <button type="button" class="btn btn--sm" (click)="load()">
+        <app-icon name="refresh" [size]="13" />
+        {{ i18n.t('common.retry') }}
+      </button>
+    </div>
+  } @else {
+    <!-- --- Hesap bilgileri ------------------------------------------------ -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="user" [size]="15" />
+          {{ i18n.t('profile.account') }}
+        </h2>
+      </header>
+
+      <dl class="facts">
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('profile.role') }}</dt>
+          <dd class="facts__value">{{ roleLabel() }}</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="facts__label">{{ i18n.t('profile.memberSince') }}</dt>
+          <dd class="facts__value">{{ memberSince() }}</dd>
+        </div>
+      </dl>
+
+      @if (profileError(); as error) {
+        <div class="alert" role="alert">
+          <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+          <span>{{ error }}</span>
+        </div>
+      }
+
+      <form class="form" [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+        <div class="field">
+          <label class="field__label" for="fullName">{{ i18n.t('profile.fullName') }}</label>
+          <div class="input-group">
+            <span class="input-group__icon">
+              <app-icon name="user" [size]="15" />
+            </span>
+            <input
+              id="fullName"
+              class="input"
+              type="text"
+              formControlName="fullName"
+              autocomplete="name"
+              [attr.aria-invalid]="showProfileError('fullName')"
+            />
+          </div>
+          @if (showProfileError('fullName')) {
+            <span class="field__error">
+              @if (profileForm.controls.fullName.hasError('required')) {
+                {{ i18n.t('profile.fullNameRequired') }}
+              } @else {
+                {{ i18n.t('profile.fullNameMin') }}
+              }
+            </span>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="email">{{ i18n.t('field.email') }}</label>
+          <div class="input-group">
+            <span class="input-group__icon">
+              <app-icon name="mail" [size]="15" />
+            </span>
+            <input
+              id="email"
+              class="input"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              [attr.aria-invalid]="showProfileError('email')"
+            />
+          </div>
+          @if (showProfileError('email')) {
+            <span class="field__error">
+              @if (profileForm.controls.email.hasError('required')) {
+                {{ i18n.t('field.emailRequired') }}
+              } @else {
+                {{ i18n.t('field.emailInvalid') }}
+              }
+            </span>
+          } @else {
+            <span class="field__hint">{{ i18n.t('profile.emailHint') }}</span>
+          }
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" class="toggle__input" formControlName="notifyOnAssignment" />
+          <span class="toggle__text">
+            <span class="toggle__label">{{ i18n.t('profile.notifyAssignment') }}</span>
+            <span class="field__hint">{{ i18n.t('profile.notifyAssignmentHint') }}</span>
+          </span>
+        </label>
+
+        <label class="toggle">
+          <input type="checkbox" class="toggle__input" formControlName="notifyOnDueDate" />
+          <span class="toggle__text">
+            <span class="toggle__label">{{ i18n.t('profile.notifyDue') }}</span>
+            <span class="field__hint">{{ i18n.t('profile.notifyDueHint') }}</span>
+          </span>
+        </label>
+
+        <div class="form__actions">
+          <button
+            type="submit"
+            class="btn btn--primary"
+            [disabled]="savingProfile() || profileForm.pristine"
+          >
+            @if (savingProfile()) {
+              <app-icon class="spin" name="loader" [size]="15" />
+              {{ i18n.t('dialog.saving') }}
+            } @else {
+              <app-icon name="check" [size]="15" />
+              {{ i18n.t('dialog.saveChanges') }}
+            }
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- --- Şifre ---------------------------------------------------------- -->
+    <section class="panel">
+      <header class="panel__head">
+        <h2 class="panel__title">
+          <app-icon name="lock" [size]="15" />
+          {{ i18n.t('profile.passwordSection') }}
+        </h2>
+      </header>
+
+      @if (passwordError(); as error) {
+        <div class="alert" role="alert">
+          <app-icon class="alert__icon" name="circle-alert" [size]="14" />
+          <span>{{ error }}</span>
+        </div>
+      }
+
+      <form class="form" [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+        <div class="field">
+          <label class="field__label" for="currentPassword">{{ i18n.t('profile.currentPassword') }}</label>
+          <div class="input-group">
+            <span class="input-group__icon">
+              <app-icon name="lock" [size]="15" />
+            </span>
+            <input
+              id="currentPassword"
+              class="input"
+              type="password"
+              formControlName="currentPassword"
+              autocomplete="current-password"
+              [attr.aria-invalid]="showPasswordError('currentPassword')"
+            />
+          </div>
+          @if (showPasswordError('currentPassword')) {
+            <span class="field__error">{{ i18n.t('profile.currentPasswordRequired') }}</span>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="newPassword">{{ i18n.t('reset.newPassword') }}</label>
+          <div class="input-group">
+            <span class="input-group__icon">
+              <app-icon name="lock" [size]="15" />
+            </span>
+            <input
+              id="newPassword"
+              class="input"
+              [type]="passwordVisible() ? 'text' : 'password'"
+              formControlName="newPassword"
+              autocomplete="new-password"
+              [placeholder]="i18n.t('field.passwordPlaceholder', { min: minPasswordLength })"
+              [attr.aria-invalid]="showPasswordError('newPassword')"
+            />
+            <button
+              type="button"
+              class="btn btn--ghost btn--icon btn--sm input-group__clear"
+              (click)="togglePassword()"
+              [attr.aria-label]="
+                passwordVisible() ? i18n.t('field.hidePassword') : i18n.t('field.showPassword')
+              "
+            >
+              <app-icon [name]="passwordVisible() ? 'eye-off' : 'eye'" [size]="15" />
+            </button>
+          </div>
+          @if (showPasswordError('newPassword')) {
+            <span class="field__error">
+              @if (passwordForm.controls.newPassword.hasError('required')) {
+                {{ i18n.t('reset.newPasswordRequired') }}
+              } @else {
+                {{ i18n.t('field.passwordMin', { min: minPasswordLength }) }}
+              }
+            </span>
+          }
+        </div>
+
+        <div class="form__actions">
+          <button type="submit" class="btn btn--primary" [disabled]="savingPassword()">
+            @if (savingPassword()) {
+              <app-icon class="spin" name="loader" [size]="15" />
+              {{ i18n.t('profile.changing') }}
+            } @else {
+              <app-icon name="lock" [size]="15" />
+              {{ i18n.t('profile.changePassword') }}
+            }
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+</div>

@@ -1,0 +1,121 @@
+# Üç konteyner: PostgreSQL, .NET API ve nginx üzerinde Angular.
+#
+#   cp .env.example .env    # değerleri doldur
+#   docker compose up -d --build
+#   → http://localhost:4200
+#
+# Sırlar buraya YAZILMAZ; hepsi .env dosyasından geliyor (.env git'te değil).
+
+name: istakip
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-taskmanagementsystem}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?.env dosyasinda POSTGRES_PASSWORD tanimli degil}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Şema burada kurulmuyor. docker-entrypoint-initdb.d yalnızca veri
+      # klasörü boşken çalışıyor, yani şema sonradan değiştiğinde işe
+      # yaramıyordu. Artık şemayı uygulama açılırken DatabaseMigrator
+      # kuruyor ve eksik migration'ları da o uyguluyor - hem konteynerde
+      # hem elle kurulumda tek yol.
+    ports:
+      # Makinede zaten bir PostgreSQL varsa 5432 dolu olur; dışarı 5433'ten
+      # açılıyor. Konteynerler birbirine iç ağdan (db:5432) bağlanıyor.
+      - "${DB_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-taskmanagementsystem}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  server:
+    build:
+      context: ./server
+    environment:
+      # Development: Swagger açık kalsın ve HTTPS yönlendirmesi devreye
+      # girmesin diye. Konteynerde sertifika yok - TLS gerçek dağıtımda en
+      # dıştaki reverse proxy'de sonlandırılır.
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      # Çift alt çizgi = iç içe ayar (ConnectionStrings:DefaultConnection).
+      # Ortam değişkenleri appsettings.json'daki boş değerleri eziyor, bu
+      # yüzden konteynerde User Secrets'a gerek kalmıyor.
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:-taskmanagementsystem};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}"
+      Jwt__Key: ${JWT_KEY:?.env dosyasinda JWT_KEY tanimli degil}
+      # Tarayıcı her şeyi nginx üzerinden tek origin'den görüyor; bu liste
+      # yalnızca API'ye doğrudan (ör. localhost:5208) gidilirse devreye girer.
+      Cors__AllowedOrigins__0: "http://localhost:${CLIENT_PORT:-4200}"
+      Email__Provider: ${EMAIL_PROVIDER:-Mock}
+      Email__AppUrl: "http://localhost:${CLIENT_PORT:-4200}"
+      Email__Smtp__Host: ${SMTP_HOST:-}
+      Email__Smtp__UserName: ${SMTP_USERNAME:-}
+      Email__Smtp__Password: ${SMTP_PASSWORD:-}
+    volumes:
+      # Ek dosyalar konteyner katmanında kalsaydı her yeniden derlemede
+      # kaybolurdu.
+      - attachments:/app/attachments
+    depends_on:
+      db:
+        # Sadece "başladı" yetmiyor: PostgreSQL bağlantı kabul etmeye hazır
+        # olmadan API açılırsa ilk sorgular patlar.
+        condition: service_healthy
+    ports:
+      - "${SERVER_PORT:-5208}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "${CLIENT_PORT:-4200}:80"
+    restart: unless-stopped
+
+  # Demo verisi. profiles altında olduğu için normal `up` ile AÇILMIYOR;
+  # yalnızca açıkça istendiğinde çalışıyor:
+  #
+  #   docker compose --profile demo run --rm seed
+  #
+  # Giriş: demo@istakip.local / Demo1234 (ekip kodu KANBAN25)
+  #
+  # Tekrar çalıştırılabilir: script kendi demo ekibini silip yeniden kuruyor,
+  # başka veriye dokunmuyor. Uygulama imajına ihtiyaç yok, psql yeterli - bu
+  # yüzden db ile aynı postgres imajı kullanılıyor.
+  seed:
+    image: postgres:17-alpine
+    profiles: ["demo"]
+    depends_on:
+      # db değil server bekleniyor: tabloları artık uygulama açılırken
+      # DatabaseMigrator kuruyor, dolayısıyla şema ancak server sağlıklı
+      # olduğunda hazır oluyor.
+      server:
+        condition: service_healthy
+    # Bağlantı bilgisi psql'in kendi ortam değişkenlerinden geliyor; komut
+    # satırında adres/kullanıcı taşımaya gerek kalmıyor.
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGDATABASE: ${POSTGRES_DB:-taskmanagementsystem}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?.env dosyasinda POSTGRES_PASSWORD tanimli degil}
+    volumes:
+      - ./server/Database/seed.sql:/seed.sql:ro
+    # ON_ERROR_STOP: script'in ortasında bir hata olursa yarım veriyle
+    # "başarılı" görünmesin.
+    command: ["psql", "-v", "ON_ERROR_STOP=1", "-f", "/seed.sql"]
+    restart: "no"
+
+volumes:
+  db-data:
+  attachments:

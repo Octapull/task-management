@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskHub Test Sayfası</title>
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        textarea {
+            width: 100%;
+        }
+
+        #log {
+            list-style: none;
+            padding: 0;
+        }
+
+            #log li {
+                padding: 6px;
+                border-bottom: 1px solid #ddd;
+                font-family: monospace;
+                font-size: 13px;
+            }
+
+        button {
+            padding: 8px 16px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>TaskHub Test Sayfası</h2>
+    <p>Bu sayfa, backend'e Angular olmadan bağlanıp SignalR event'lerini dinler.</p>
+
+    <label>JWT Token (POST /api/auth/login'den al):</label><br>
+    <textarea id="token" rows="3" placeholder="Buraya token'ı yapıştır"></textarea><br><br>
+
+    <button onclick="connect()">Bağlan</button>
+    <button onclick="disconnect()">Bağlantıyı Kes</button>
+
+    <p><strong>Durum:</strong> <span id="status">Bağlı değil</span></p>
+
+    <h3>Gelen Olaylar</h3>
+    <ul id="log"></ul>
+
+    <script>
+        let connection;
+
+        function log(message) {
+            const li = document.createElement('li');
+            li.textContent = new Date().toLocaleTimeString() + '  ' + message;
+            document.getElementById('log').prepend(li);
+        }
+
+        async function connect() {
+            const token = document.getElementById('token').value.trim();
+            if (!token) {
+                alert('Önce bir token yapıştır (Swagger üzerinden POST /api/auth/login ile alabilirsin)');
+                return;
+            }
+
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/tasks', { accessTokenFactory: () => token })
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('TaskCreated', (task) => log('TaskCreated: ' + JSON.stringify(task)));
+            connection.on('TaskAssigned', (data) => log('TaskAssigned: ' + JSON.stringify(data)));
+            connection.on('TaskStatusChanged', (data) => log('TaskStatusChanged: ' + JSON.stringify(data)));
+            connection.on('TaskUpdated', (task) => log('TaskUpdated: ' + JSON.stringify(task)));
+            connection.on('TaskDeleted', (id) => log('TaskDeleted: id=' + id));
+
+            connection.onclose(() => {
+                document.getElementById('status').textContent = 'Bağlı değil (koptu)';
+            });
+
+            try {
+                await connection.start();
+                document.getElementById('status').textContent = 'Bağlandı ✅';
+                log('Hub\'a başarıyla bağlanıldı.');
+            } catch (err) {
+                document.getElementById('status').textContent = 'Hata: ' + err;
+                log('Bağlantı hatası: ' + err);
+            }
+        }
+
+        async function disconnect() {
+            if (connection) {
+                await connection.stop();
+                document.getElementById('status').textContent = 'Bağlı değil';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+:host {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-page);
+}
+
+/* =============================================================================
+   Üst çubuk
+   ============================================================================= */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--topbar-h);
+  padding: 0 var(--sp-4);
+  background: var(--bg-surface);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.topbar__brand:hover {
+  text-decoration: none;
+}
+
+.topbar__spacer {
+  flex: 1;
+}
+
+/* --- Görünüm sekmeleri ---------------------------------------------------- */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: var(--sp-4);
+}
+
+.nav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--control-h-sm);
+  padding: 0 var(--sp-3);
+  border-radius: var(--radius-md);
+  color: var(--fg-muted);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.nav__item:hover {
+  background: var(--bg-hover);
+  color: var(--fg-default);
+  text-decoration: none;
+}
+
+.nav__item--active {
+  background: var(--bg-inset);
+  color: var(--fg-default);
+}
+
+/* --- Arama ---------------------------------------------------------------- */
+.search {
+  width: 240px;
+}
+
+.search .input {
+  height: var(--control-h-md);
+  font-size: var(--fs-13);
+  padding-right: var(--sp-8);
+}
+
+/* Arama kutusundaki "/" kısayol ipucu. */
+.search__kbd {
+  position: absolute;
+  right: var(--sp-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-inset);
+  color: var(--fg-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  pointer-events: none;
+}
+
+/* Tarayıcının kendi "temizle" çarpısını gizliyoruz, kendi butonumuz var. */
+.search .input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* --- Hesap menüsü --------------------------------------------------------- */
+.topbar__user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--control-h-md);
+  padding: 0 var(--sp-1) 0 var(--sp-1);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.topbar__user:hover {
+  background: var(--bg-hover);
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--sp-2) var(--sp-2) var(--sp-1);
+}
+
+.user-card__name {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  color: var(--fg-default);
+}
+
+.user-card__role {
+  font-size: var(--fs-11);
+  color: var(--fg-subtle);
+}
+
+/* =============================================================================
+   Filtre / özet satırı
+   ============================================================================= */
+.subbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--bg-surface);
+  border-bottom: var(--border-width) solid var(--border);
+  overflow-x: auto;
+}
+
+.subbar__spacer {
+  flex: 1;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+/* Sayaçlar: etiket soluk, değer koyu - bir bakışta değer okunuyor. */
+.stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.stat__label {
+  font-size: var(--fs-11);
+  color: var(--fg-subtle);
+}
+
+.stat__value {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-default);
+}
+
+.stat--accent .stat__value {
+  color: var(--accent-text);
+}
+
+.stat--danger {
+  background: var(--danger-bg);
+}
+
+.stat--danger .stat__label {
+  color: var(--danger-fg);
+  opacity: 0.85;
+}
+
+.stat--danger .stat__value {
+  color: var(--danger-fg);
+}
+
+/* =============================================================================
+   İçerik
+   ============================================================================= */
+.content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* =============================================================================
+   Duyarlılık
+   ============================================================================= */
+@media (max-width: 1100px) {
+  .search {
+    width: 180px;
+  }
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    padding: 0 var(--sp-3);
+  }
+
+  .nav {
+    margin-left: var(--sp-2);
+  }
+
+  .topbar__btn-label {
+    display: none;
+  }
+
+  .search {
+    width: 150px;
+  }
+
+  .search__kbd {
+    display: none;
+  }
+
+  .subbar {
+    padding: var(--sp-2) var(--sp-3);
+  }
+}
+
+@media (max-width: 640px) {
+  /* Arama gizlenmiyor - sadece daralıyor; mobilde de aranabilmeli. */
+  .search {
+    width: 120px;
+  }
+
+  .topbar__brand {
+    display: none;
+  }
+
+  .nav {
+    margin-left: 0;
+  }
+}

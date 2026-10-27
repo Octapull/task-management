@@ -1,0 +1,76 @@
+<button
+  type="button"
+  class="btn btn--ghost btn--icon btn--sm"
+  [matMenuTriggerFor]="menu"
+  [attr.aria-label]="i18n.t('menu.aria')"
+>
+  <app-icon name="ellipsis" [size]="15" />
+</button>
+
+<mat-menu #menu="matMenu" xPosition="before">
+  <button mat-menu-item (click)="edit()">
+    <app-icon name="clipboard-list" [size]="14" />
+    {{ i18n.t('menu.edit') }}
+  </button>
+
+  <div class="menu-separator"></div>
+
+  @if (task().status !== Status.Open) {
+    <button mat-menu-item (click)="moveTo(Status.Open)">
+      <app-icon name="inbox" [size]="14" />
+      {{ i18n.t('menu.toPool') }}
+    </button>
+  }
+
+  @if (task().status !== Status.Taken) {
+    <button mat-menu-item (click)="moveTo(Status.Taken)">
+      <app-icon name="user-plus" [size]="14" />
+      @if (task().status === Status.Open) {
+        {{ i18n.t('menu.claimStart') }}
+      } @else {
+        {{ i18n.t('menu.markInProgress') }}
+      }
+    </button>
+  }
+
+  @if (task().status !== Status.Completed) {
+    <button mat-menu-item (click)="moveTo(Status.Completed)">
+      <app-icon name="circle-check" [size]="14" />
+      {{ i18n.t('menu.markCompleted') }}
+    </button>
+  }
+
+  <div class="menu-separator"></div>
+
+  @if (assignableUsers().length > 0) {
+    <button mat-menu-item [matMenuTriggerFor]="assignMenu">
+      <app-icon name="users" [size]="14" />
+      {{ i18n.t('menu.assignOther') }}
+    </button>
+  }
+
+  @if (!isUnassigned()) {
+    <button mat-menu-item (click)="unassign()">
+      <app-icon name="x" [size]="14" />
+      {{ i18n.t('menu.unassign') }}
+    </button>
+  }
+
+  @if (canDelete()) {
+    <div class="menu-separator"></div>
+
+    <button mat-menu-item class="menu-item--danger" (click)="remove()">
+      <app-icon name="trash" [size]="14" />
+      {{ i18n.t('common.delete') }}
+    </button>
+  }
+</mat-menu>
+
+<mat-menu #assignMenu="matMenu">
+  @for (user of assignableUsers(); track user.id) {
+    <button mat-menu-item (click)="assignTo(user)">
+      <app-icon name="user" [size]="14" />
+      {{ userLabel(user) }}
+    </button>
+  }
+</mat-menu>

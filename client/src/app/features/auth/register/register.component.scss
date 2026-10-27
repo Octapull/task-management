@@ -1,0 +1,161 @@
+@use '../auth-form';
+
+/* Şifre gücü göstergesi: üç parçalı ince bir çubuk. */
+.strength {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.strength__bars {
+  display: flex;
+  gap: 3px;
+}
+
+.strength__bar {
+  height: 3px;
+  flex: 1;
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  transition: background-color var(--dur-normal) var(--ease-standard);
+}
+
+.strength__bar--weak {
+  background: var(--danger-fg);
+}
+
+.strength__bar--medium {
+  background: var(--warning-fg);
+}
+
+.strength__bar--strong {
+  background: var(--success-fg);
+}
+
+/* --- Ekip seçimi ----------------------------------------------------------
+   İki seçenek yan yana değil alt alta: her birinin altında bir açıklama
+   satırı var ve dar form kolonunda yan yana sığmıyorlar. */
+.mode {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.mode__card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--fg-default);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-standard),
+    background-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+.mode__card:hover {
+  border-color: var(--fg-subtle);
+}
+
+/* Seçili kart: aksan rengiyle çerçeveleniyor. Kutunun boyutu değişmesin
+   diye kalın kenarlık yerine 1px iç halka kullanılıyor. */
+.mode__card[aria-checked='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.mode__card:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.mode__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-inset);
+  color: var(--fg-muted);
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.mode__card[aria-checked='true'] .mode__icon {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.mode__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mode__text strong {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+}
+
+.mode__text small {
+  font-size: var(--fs-12);
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+}
+
+/* Ekip kodu, harf harf okunan bir değer - eşit genişlikli yazı tipi ve
+   ferah harf aralığı yanlış okumayı azaltıyor. */
+.input--code {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.input--code::placeholder {
+  letter-spacing: 0.14em;
+}
+
+/* Doğrulanmış ekip kodu için olumlu ipucu. */
+.field__hint--ok {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  color: var(--success-fg);
+}
+
+/* Mod değişince yeni alan aşağıdan belirsin. CSS ile yapılıyor:
+   @angular/animations bu projede kurulu değil. */
+.slide-in {
+  animation: slide-in var(--dur-normal) var(--ease-standard);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hareketi rahatsız edici bulan kullanıcılar için kapatılıyor. */
+@media (prefers-reduced-motion: reduce) {
+  .slide-in {
+    animation: none;
+  }
+}

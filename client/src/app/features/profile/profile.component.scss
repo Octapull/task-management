@@ -1,0 +1,153 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+
+/* Okuma genişliği sınırlı: form alanları ekran boyunca uzamasın. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 620px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-4) var(--sp-10);
+}
+
+.page__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.page__title {
+  margin: 0;
+  font-size: var(--fs-22);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-default);
+}
+
+.page__subtitle {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+
+/* --- Kart ----------------------------------------------------------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  font-size: var(--fs-14);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-default);
+}
+
+/* --- Değiştirilemeyen bilgiler -------------------------------------------- */
+.facts {
+  display: flex;
+  gap: var(--sp-8);
+  margin: 0;
+  padding: var(--sp-3);
+  background: var(--bg-inset);
+  border-radius: var(--radius-md);
+}
+
+.facts__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.facts__label {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--fg-subtle);
+}
+
+.facts__value {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--fg-default);
+}
+
+/* --- Form ----------------------------------------------------------------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* --- Yükleniyor iskeleti -------------------------------------------------- */
+.skeleton--line {
+  height: 14px;
+}
+
+.skeleton--line:first-child {
+  width: 40%;
+}
+
+.skeleton--line:last-child {
+  width: 65%;
+}
+
+@media (max-width: 620px) {
+  .facts {
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+}
+
+/* --- Onay kutusu ---------------------------------------------------------- */
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  cursor: pointer;
+}
+
+.toggle__input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.toggle__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.toggle__label {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  color: var(--fg-default);
+}

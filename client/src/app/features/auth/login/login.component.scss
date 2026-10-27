@@ -1,0 +1,12 @@
+@use '../auth-form';
+
+/* Şifre alanının hemen altında, sağa yaslı ince bağlantı. */
+.form-panel__forgot {
+  align-self: flex-end;
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+}
+
+.form-panel__forgot:hover {
+  color: var(--fg-default);
+}
